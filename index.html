@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>健康知識測驗</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #3b82f6;
+      --primary-soft: #dbeafe;
+      --correct: #16a34a;
+      --wrong: #dc2626;
+      --border: #e5e7eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .title h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    .title p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.08);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: var(--primary-soft);
+      color: var(--primary);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .progress-wrap {
+      width: 100%;
+      margin: 10px 0 20px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #60a5fa, #2563eb);
+      transition: width 0.3s ease;
+    }
+
+    .question {
+      font-size: 1.35rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(59, 130, 246, 0.12);
+    }
+
+    .option-btn.correct {
+      border-color: var(--correct);
+      background: #ecfdf5;
+      color: #166534;
+      font-weight: 700;
+    }
+
+    .option-btn.wrong {
+      border-color: var(--wrong);
+      background: #fef2f2;
+      color: #991b1b;
+      font-weight: 700;
+    }
+
+    .feedback {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      display: none;
+      line-height: 1.7;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+
+    .next-btn, .restart-btn, .start-btn {
+      border: none;
+      background: var(--primary);
+      color: white;
+      padding: 14px 20px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .next-btn:hover, .restart-btn:hover, .start-btn:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+
+    .result {
+      display: none;
+      text-align: center;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result h2 {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+    }
+
+    .score {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 10px 0 16px;
+    }
+
+    .ending {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      margin: 18px 0;
+      text-align: left;
+      line-height: 1.7;
+    }
+
+    .start-screen {
+      text-align: center;
+    }
+
+    .start-screen ul {
+      text-align: left;
+      display: inline-block;
+      color: var(--muted);
+      line-height: 1.8;
+      margin: 18px auto 24px;
+      padding-left: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      .card { padding: 18px; }
+      .question { font-size: 1.15rem; }
+      .title h1 { font-size: 1.7rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">
+      <h1>健康知識測驗</h1>
+      <p>邊玩邊學，看看你是哪一型健康大學生</p>
+    </div>
+
+    <div class="card">
+      <div id="startScreen" class="start-screen">
+        <h2>開始挑戰</h2>
+        <p>共 8 題，答完後會得到你的健康結局。</p>
+        <ul>
+          <li>每題作答後會看到正確解釋</li>
+          <li>最後除了分數，也會有你的健康類型</li>
+          <li>適合做為網頁版課堂互動小遊戲</li>
+        </ul>
+        <button class="start-btn" id="startBtn">開始遊戲</button>
+      </div>
+
+      <div id="gameScreen" class="hidden">
+        <div class="topbar">
+          <div class="badge" id="questionNumber">第 1 題 / 8</div>
+          <div class="badge" id="scoreDisplay">分數：0</div>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+
+        <div class="question" id="questionText"></div>
+        <div class="options" id="optionsContainer"></div>
+        <div class="feedback" id="feedbackBox"></div>
+        <div class="actions">
+          <button class="next-btn hidden" id="nextBtn">下一題</button>
+        </div>
+      </div>
+
+      <div id="resultScreen" class="result">
+        <h2>測驗完成！</h2>
+        <div class="score" id="finalScore"></div>
+        <div class="ending" id="endingText"></div>
+        <button class="restart-btn" id="restartBtn">再玩一次</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "下列哪一項最能幫助提升心肺耐力？",
+        options: ["每週慢跑或快走數次", "每天熬夜追劇", "久坐讀書一整天", "只做手指運動"],
+        answer: 0,
+        explanation: "心肺耐力主要透過持續性的有氧運動提升，例如慢跑、快走、游泳或騎腳踏車。"
+      },
+      {
+        question: "大學生若長時間久坐，最可能帶來哪一種影響？",
+        options: ["體能提升", "心肺功能與代謝變差", "睡眠品質一定變好", "肌力自然增加"],
+        answer: 1,
+        explanation: "久坐會降低活動量，長期可能影響心肺適能、代謝健康與身體組成。"
+      },
+      {
+        question: "下列哪一項最接近健康體能中『柔軟度』的概念？",
+        options: ["短時間跑很快", "關節活動範圍與伸展能力", "記憶力很好", "手臂很有力"],
+        answer: 1,
+        explanation: "柔軟度是指關節可活動的範圍與肌肉伸展能力，常見訓練包括伸展與暖身。"
+      },
+      {
+        question: "若想維持良好健康適能，哪種生活型態比較理想？",
+        options: ["熬夜配手搖飲", "規律運動、均衡飲食、充足睡眠", "不吃早餐但喝兩杯咖啡", "平日不動，假日一次爆量運動"],
+        answer: 1,
+        explanation: "健康適能不是只靠運動，還包含睡眠、飲食與生活習慣的整體配合。"
+      },
+      {
+        question: "下列哪一項比較屬於肌力訓練？",
+        options: ["伏地挺身", "看影片學運動", "閉眼休息", "滑手機"],
+        answer: 0,
+        explanation: "伏地挺身屬於肌力與肌耐力訓練，可以幫助上肢與核心肌群發展。"
+      },
+      {
+        question: "關於睡眠與健康適能，下列何者較正確？",
+        options: ["少睡一點比較能鍛鍊意志力", "睡眠不足可能影響恢復與表現", "睡眠和運動表現沒有關係", "只要年輕就不用睡"],
+        answer: 1,
+        explanation: "睡眠是恢復的重要一環，睡眠不足可能影響專注力、運動表現與整體健康。"
+      },
+      {
+        question: "若一位大學生想改善身體組成，最適合的做法是？",
+        options: ["只節食不運動", "規律運動並注意飲食習慣", "每天只喝含糖飲料", "睡前大量吃消夜"],
+        answer: 1,
+        explanation: "身體組成的改善通常需要運動與飲食一起調整，單靠極端節食通常不理想。"
+      },
+      {
+        question: "下列哪一項最符合健康適能的學習目標？",
+        options: ["只記住定義就好", "了解概念後，能應用到自己的生活選擇", "只要考試及格", "完全不需要實踐"],
+        answer: 1,
+        explanation: "健康適能的重點不只是背知識，而是把知識變成生活中的判斷與行動。"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let correctCount = 0;
+
+    const startScreen = document.getElementById('startScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const startBtn = document.getElementById('startBtn');
+    const questionNumber = document.getElementById('questionNumber');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const questionText = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const feedbackBox = document.getElementById('feedbackBox');
+    const nextBtn = document.getElementById('nextBtn');
+    const finalScore = document.getElementById('finalScore');
+    const endingText = document.getElementById('endingText');
+    const restartBtn = document.getElementById('restartBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    startBtn.addEventListener('click', startGame);
+    nextBtn.addEventListener('click', goNext);
+    restartBtn.addEventListener('click', restartGame);
+
+    function startGame() {
+      startScreen.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      questionNumber.textContent = `第 ${currentQuestion + 1} 題 / ${questions.length}`;
+      scoreDisplay.textContent = `分數：${score}`;
+      questionText.textContent = q.question;
+      optionsContainer.innerHTML = '';
+      feedbackBox.className = 'feedback';
+      feedbackBox.innerHTML = '';
+      nextBtn.classList.add('hidden');
+      progressBar.style.width = `${(currentQuestion / questions.length) * 100}%`;
+
+      q.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = option;
+        btn.addEventListener('click', () => selectAnswer(index, btn));
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(selectedIndex, selectedBtn) {
+      const q = questions[currentQuestion];
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach(btn => btn.disabled = true);
+
+      if (selectedIndex === q.answer) {
+        selectedBtn.classList.add('correct');
+        score += 10;
+        correctCount += 1;
+        feedbackBox.innerHTML = `<strong>答對了！</strong>${q.explanation}`;
+      } else {
+        selectedBtn.classList.add('wrong');
+        buttons[q.answer].classList.add('correct');
+        feedbackBox.innerHTML = `<strong>答錯了！</strong>${q.explanation}`;
+      }
+
+      scoreDisplay.textContent = `分數：${score}`;
+      feedbackBox.classList.add('show');
+      nextBtn.classList.remove('hidden');
+    }
+
+    function goNext() {
+      currentQuestion += 1;
+      if (currentQuestion < questions.length) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function getEnding() {
+      if (correctCount <= 2) {
+        return {
+          title: '🛋️ 久坐迷航型',
+          text: '你目前對健康適能的掌握還在起步中，可能平常比較少注意運動、睡眠與生活習慣。建議先從每天增加活動量開始。'
+        };
+      } else if (correctCount <= 4) {
+        return {
+          title: '🍟 外食生存型',
+          text: '你已經有一些健康概念，但還不夠穩定。你的生活可能常在忙碌、外食與不規律中切換，還有進步空間。'
+        };
+      } else if (correctCount <= 6) {
+        return {
+          title: '😐 普通維持型',
+          text: '你的健康知識基礎不錯，已經知道不少正確觀念。若再把知識轉成穩定行動，就能更接近健康達人。'
+        };
+      } else {
+        return {
+          title: '💪 健康達人型',
+          text: '你對健康適能有不錯的理解，已經掌握運動、睡眠、飲食與身體組成的重要觀念。繼續保持！'
+        };
+      }
+    }
+
+    function showResult() {
+      gameScreen.classList.add('hidden');
+      resultScreen.classList.add('show');
+      progressBar.style.width = '100%';
+      finalScore.textContent = `${score} 分`;
+      const ending = getEnding();
+      endingText.innerHTML = `<strong style="font-size:1.2rem; display:block; margin-bottom:8px;">${ending.title}</strong>${ending.text}`;
+    }
+
+    function restartGame() {
+      currentQuestion = 0;
+      score = 0;
+      correctCount = 0;
+      resultScreen.classList.remove('show');
+      startScreen.classList.remove('hidden');
+      gameScreen.classList.add('hidden');
+      progressBar.style.width = '0%';
+    }
+  </script>
+</body>
+</html>
