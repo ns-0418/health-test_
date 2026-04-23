@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>健康知識測驗</title>
+  <title>健康決策大挑戰</title>
   <style>
     :root {
-      --bg: #f5f7fb;
-      --card: #ffffff;
+      --bg1: #eef6ff;
+      --bg2: #dbeafe;
+      --card: rgba(255,255,255,0.96);
       --text: #1f2937;
       --muted: #6b7280;
-      --primary: #3b82f6;
-      --primary-soft: #dbeafe;
-      --correct: #16a34a;
-      --wrong: #dc2626;
-      --border: #e5e7eb;
+      --primary: #2563eb;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --coin: #fbbf24;
+      --border: #dbe3ef;
     }
 
     * { box-sizing: border-box; }
@@ -22,96 +23,388 @@
     body {
       margin: 0;
       font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
       color: var(--text);
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
     }
 
-    .container {
-      max-width: 900px;
+    .app {
+      max-width: 1220px;
       margin: 0 auto;
-      padding: 32px 20px 60px;
+      padding: 20px;
     }
 
-    .title {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .title h1 {
-      margin: 0 0 8px;
-      font-size: 2rem;
-    }
-
-    .title p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .card {
+    .panel {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.08);
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      background: var(--primary-soft);
-      color: var(--primary);
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
-
-    .progress-wrap {
-      width: 100%;
-      margin: 10px 0 20px;
-    }
-
-    .progress {
-      width: 100%;
-      height: 12px;
-      background: #e5e7eb;
-      border-radius: 999px;
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(37, 99, 235, 0.12);
       overflow: hidden;
     }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #60a5fa, #2563eb);
-      transition: width 0.3s ease;
+    .header {
+      padding: 24px 24px 8px;
+      text-align: center;
     }
 
-    .question {
-      font-size: 1.35rem;
-      line-height: 1.6;
-      margin-bottom: 20px;
+    .header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .header p {
+      color: var(--muted);
+      margin: 8px 0 0;
+    }
+
+    .screen {
+      display: none;
+      padding: 24px;
+    }
+
+    .screen.active { display: block; }
+
+    .input-group {
+      margin: 20px 0 8px;
+    }
+
+    .input-group label {
+      display: block;
       font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .name-input {
+      width: 100%;
+      max-width: 320px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .name-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+    }
+
+    .rules {
+      background: #f8fbff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px 18px;
+      margin: 18px 0 22px;
+      line-height: 1.8;
+    }
+
+    .rules h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+
+    .rules ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .characters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin: 20px 0 24px;
+    }
+
+    .character-card {
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      background: #fff;
+      transition: 0.2s ease;
+    }
+
+    .character-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+    }
+
+    .character-card.selected {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .avatar {
+      font-size: 3rem;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--primary);
+      color: #fff;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .game-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .side-rank {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .side-rank h3 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .rank-list {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .rank-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px dashed #e5e7eb;
+      font-size: 0.96rem;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 120px repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .pause-btn {
+      border: none;
+      border-radius: 16px;
+      background: #111827;
+      color: #fff;
+      font-weight: 800;
+      padding: 14px 10px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .pause-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 12px;
+      text-align: center;
+      position: relative;
+      overflow: visible;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .run-area {
+      position: relative;
+      height: 340px;
+      border-radius: 24px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #bfdbfe 0%, #e0f2fe 48%, #bbf7d0 49%, #86efac 100%);
+      border: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .cloud, .cloud2 {
+      position: absolute;
+      color: rgba(255,255,255,0.9);
+      font-size: 3rem;
+      animation: drift 18s linear infinite;
+    }
+
+    .cloud { top: 18px; left: -80px; }
+    .cloud2 { top: 64px; left: -180px; animation-duration: 24s; }
+
+    @keyframes drift {
+      from { transform: translateX(0); }
+      to { transform: translateX(1280px); }
+    }
+
+    .road {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 88px;
+      background: #4b5563;
+    }
+
+    .road::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 38px;
+      height: 10px;
+      background-image: repeating-linear-gradient(90deg, #fff 0 34px, transparent 34px 74px);
+      animation: roadMove 0.6s linear infinite;
+    }
+
+    @keyframes roadMove {
+      from { background-position-x: 0; }
+      to { background-position-x: -74px; }
+    }
+
+    .runner {
+      position: absolute;
+      bottom: 84px;
+      right: 110px;
+      font-size: 4rem;
+      animation: runBounce 0.4s ease-in-out infinite alternate;
+      z-index: 3;
+      user-select: none;
+    }
+
+    @keyframes runBounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+
+    .paused .runner,
+    .paused .road::before,
+    .paused .cloud,
+    .paused .cloud2,
+    .paused .coin {
+      animation-play-state: paused !important;
+    }
+
+    .coin {
+      position: absolute;
+      bottom: 118px;
+      left: -48px;
+      font-size: 1.8rem;
+      animation: coinMove 4.5s linear forwards;
+      z-index: 2;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+      user-select: none;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .coin.collected {
+      opacity: 0;
+      transform: translateY(-36px) scale(1.2);
+    }
+
+    @keyframes coinMove {
+      from { transform: translateX(0); }
+      to { transform: translateX(1280px); }
+    }
+
+    .floating-score {
+      position: fixed;
+      z-index: 999;
+      pointer-events: none;
+      font-weight: 900;
+      font-size: 1.6rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: transform 1.4s ease, opacity 1.4s ease;
+    }
+
+    .question-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 5;
+    }
+
+    .question-overlay.show { display: flex; }
+
+    .question-box {
+      width: min(700px, 100%);
+      background: #fff;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+    }
+
+    .timer-wrap { margin-bottom: 12px; }
+
+    .timer-bar-bg {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .timer-bar {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #ef4444);
+      transition: width 1s linear;
+    }
+
+    .timer-text {
+      margin-top: 8px;
+      color: var(--danger);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .question-title {
+      font-size: 1.25rem;
+      line-height: 1.6;
+      font-weight: 800;
+      margin-bottom: 16px;
     }
 
     .options {
       display: grid;
-      gap: 12px;
+      gap: 10px;
     }
 
     .option-btn {
-      width: 100%;
-      text-align: left;
       border: 1px solid var(--border);
       background: #fff;
       border-radius: 16px;
-      padding: 16px 18px;
+      padding: 14px 16px;
+      text-align: left;
       font-size: 1rem;
       cursor: pointer;
       transition: 0.2s ease;
@@ -119,342 +412,734 @@
 
     .option-btn:hover:not(:disabled) {
       border-color: var(--primary);
-      transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(59, 130, 246, 0.12);
+      background: #eff6ff;
     }
 
     .option-btn.correct {
-      border-color: var(--correct);
+      border-color: var(--success);
       background: #ecfdf5;
       color: #166534;
       font-weight: 700;
     }
 
     .option-btn.wrong {
-      border-color: var(--wrong);
+      border-color: var(--danger);
       background: #fef2f2;
       color: #991b1b;
       font-weight: 700;
     }
 
     .feedback {
-      margin-top: 18px;
-      padding: 16px;
+      display: none;
+      margin-top: 14px;
+      padding: 14px;
       border-radius: 16px;
-      background: #f8fafc;
       border: 1px solid var(--border);
-      display: none;
+      background: #f8fafc;
       line-height: 1.7;
     }
 
-    .feedback.show {
-      display: block;
-    }
+    .feedback.show { display: block; }
 
-    .feedback strong {
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 18px;
-    }
-
-    .next-btn, .restart-btn, .start-btn {
-      border: none;
-      background: var(--primary);
-      color: white;
-      padding: 14px 20px;
-      border-radius: 14px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .next-btn:hover, .restart-btn:hover, .start-btn:hover {
-      filter: brightness(1.05);
-      transform: translateY(-1px);
-    }
-
-    .result {
-      display: none;
-      text-align: center;
-    }
-
-    .result.show {
-      display: block;
-    }
-
-    .result h2 {
-      font-size: 1.8rem;
-      margin-bottom: 12px;
-    }
-
-    .score {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 10px 0 16px;
-    }
-
-    .ending {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      margin: 18px 0;
-      text-align: left;
-      line-height: 1.7;
-    }
-
-    .start-screen {
-      text-align: center;
-    }
-
-    .start-screen ul {
-      text-align: left;
-      display: inline-block;
+    .mini-hint {
       color: var(--muted);
-      line-height: 1.8;
-      margin: 18px auto 24px;
-      padding-left: 20px;
+      margin-top: 10px;
+      font-size: 0.95rem;
     }
 
-    .hidden {
+    .pause-mask {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
       display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 900;
     }
 
-    @media (max-width: 640px) {
-      .card { padding: 18px; }
-      .question { font-size: 1.15rem; }
-      .title h1 { font-size: 1.7rem; }
+    .pause-mask.show { display: flex; }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .result-card {
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px;
+      background: #fff;
+    }
+
+    .coins-tip {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 980px) {
+      .game-layout { grid-template-columns: 1fr; }
+      .side-rank { position: static; }
+    }
+
+    @media (max-width: 860px) {
+      .topbar { grid-template-columns: repeat(2, 1fr); }
+      .result-grid { grid-template-columns: 1fr; }
+      .runner { right: 60px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="title">
-      <h1>健康知識測驗</h1>
-      <p>邊玩邊學，看看你是哪一型健康大學生</p>
-    </div>
-
-    <div class="card">
-      <div id="startScreen" class="start-screen">
-        <h2>開始挑戰</h2>
-        <p>共 8 題，答完後會得到你的健康結局。</p>
-        <ul>
-          <li>每題作答後會看到正確解釋</li>
-          <li>最後除了分數，也會有你的健康類型</li>
-          <li>適合做為網頁版課堂互動小遊戲</li>
-        </ul>
-        <button class="start-btn" id="startBtn">開始遊戲</button>
+  <div class="app">
+    <div class="panel">
+      <div class="header">
+        <h1>健康決策大挑戰</h1>
+        <p>選擇角色、輸入名稱，一邊跑一邊答題，衝上排行榜</p>
       </div>
 
-      <div id="gameScreen" class="hidden">
-        <div class="topbar">
-          <div class="badge" id="questionNumber">第 1 題 / 8</div>
-          <div class="badge" id="scoreDisplay">分數：0</div>
+      <section id="startScreen" class="screen active">
+        <div class="input-group">
+          <label for="playerInput">輸入你的名稱</label>
+          <input id="playerInput" class="name-input" type="text" maxlength="12" placeholder="請輸入名稱（不可空白）" />
         </div>
 
-        <div class="progress-wrap">
-          <div class="progress">
-            <div class="progress-bar" id="progressBar"></div>
+        <div class="rules">
+          <h3>遊戲規則</h3>
+          <ul>
+            <li>輸入名稱並選擇角色開始遊戲。</li>
+            <li>撿到金幣 +1 分。</li>
+            <li>答對加分，答錯或超時扣 5 分（可能變負分）。</li>
+            <li>共 20 題，答完遊戲結束。</li>
+          </ul>
+        </div>
+
+        <h2>選擇你的角色</h2>
+        <div class="characters" id="characterList"></div>
+        <button class="btn" id="startBtn" disabled>開始遊戲</button>
+      </section>
+
+      <section id="gameScreen" class="screen">
+        <div class="game-layout">
+          <aside class="side-rank">
+            <h3>即時排行榜</h3>
+            <ul class="rank-list" id="liveRankList"></ul>
+          </aside>
+
+          <div>
+            <div class="topbar">
+              <button class="pause-btn" id="pauseBtn">⏸ 暫停</button>
+              <div class="stat">
+                <div class="stat-label">名稱</div>
+                <div class="stat-value" id="playerName">—</div>
+              </div>
+              <div class="stat" id="scoreStat">
+                <div class="stat-label">分數</div>
+                <div class="stat-value" id="coinCount">0</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">答對題數</div>
+                <div class="stat-value" id="correctCount">0</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">剩餘題數</div>
+                <div class="stat-value" id="remainingCount">20</div>
+              </div>
+            </div>
+
+            <div class="run-area" id="runArea">
+              <div class="cloud">☁️</div>
+              <div class="cloud2">☁️</div>
+              <div class="runner" id="runner">🐰</div>
+              <div class="road"></div>
+              <div class="pause-mask" id="pauseMask">已暫停</div>
+
+              <div class="question-overlay" id="questionOverlay">
+                <div class="question-box">
+                  <div class="timer-wrap">
+                    <div class="timer-bar-bg"><div class="timer-bar" id="timerBar"></div></div>
+                    <div class="timer-text" id="timerText">剩餘 8 秒</div>
+                  </div>
+                  <div class="question-title" id="questionText"></div>
+                  <div class="options" id="optionsContainer"></div>
+                  <div class="feedback" id="feedbackBox"></div>
+                  <div class="mini-hint">提示：限時作答，超時會直接判錯並扣 5 分。</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="coins-tip">提示：此版本使用 Firebase Realtime Database 進行連線同步排行與玩家紀錄。</div>
           </div>
         </div>
+      </section>
 
-        <div class="question" id="questionText"></div>
-        <div class="options" id="optionsContainer"></div>
-        <div class="feedback" id="feedbackBox"></div>
-        <div class="actions">
-          <button class="next-btn hidden" id="nextBtn">下一題</button>
+      <section id="resultScreen" class="screen">
+        <h2>遊戲結束！</h2>
+        <div class="result-grid">
+          <div class="result-card">
+            <h3>你的成績</h3>
+            <p id="summaryText"></p>
+            <div id="endingBox" style="line-height:1.8;"></div>
+            <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
+              <button class="btn" id="restartBtn">再玩一次</button>
+            </div>
+          </div>
+          <div class="result-card">
+            <h3>最終排行榜</h3>
+            <ul class="rank-list" id="rankList"></ul>
+          </div>
         </div>
-      </div>
-
-      <div id="resultScreen" class="result">
-        <h2>測驗完成！</h2>
-        <div class="score" id="finalScore"></div>
-        <div class="ending" id="endingText"></div>
-        <button class="restart-btn" id="restartBtn">再玩一次</button>
-      </div>
+      </section>
     </div>
   </div>
 
-  <script>
-    const questions = [
-      {
-        question: "下列哪一項最能幫助提升心肺耐力？",
-        options: ["每週慢跑或快走數次", "每天熬夜追劇", "久坐讀書一整天", "只做手指運動"],
-        answer: 0,
-        explanation: "心肺耐力主要透過持續性的有氧運動提升，例如慢跑、快走、游泳或騎腳踏車。"
-      },
-      {
-        question: "大學生若長時間久坐，最可能帶來哪一種影響？",
-        options: ["體能提升", "心肺功能與代謝變差", "睡眠品質一定變好", "肌力自然增加"],
-        answer: 1,
-        explanation: "久坐會降低活動量，長期可能影響心肺適能、代謝健康與身體組成。"
-      },
-      {
-        question: "下列哪一項最接近健康體能中『柔軟度』的概念？",
-        options: ["短時間跑很快", "關節活動範圍與伸展能力", "記憶力很好", "手臂很有力"],
-        answer: 1,
-        explanation: "柔軟度是指關節可活動的範圍與肌肉伸展能力，常見訓練包括伸展與暖身。"
-      },
-      {
-        question: "若想維持良好健康適能，哪種生活型態比較理想？",
-        options: ["熬夜配手搖飲", "規律運動、均衡飲食、充足睡眠", "不吃早餐但喝兩杯咖啡", "平日不動，假日一次爆量運動"],
-        answer: 1,
-        explanation: "健康適能不是只靠運動，還包含睡眠、飲食與生活習慣的整體配合。"
-      },
-      {
-        question: "下列哪一項比較屬於肌力訓練？",
-        options: ["伏地挺身", "看影片學運動", "閉眼休息", "滑手機"],
-        answer: 0,
-        explanation: "伏地挺身屬於肌力與肌耐力訓練，可以幫助上肢與核心肌群發展。"
-      },
-      {
-        question: "關於睡眠與健康適能，下列何者較正確？",
-        options: ["少睡一點比較能鍛鍊意志力", "睡眠不足可能影響恢復與表現", "睡眠和運動表現沒有關係", "只要年輕就不用睡"],
-        answer: 1,
-        explanation: "睡眠是恢復的重要一環，睡眠不足可能影響專注力、運動表現與整體健康。"
-      },
-      {
-        question: "若一位大學生想改善身體組成，最適合的做法是？",
-        options: ["只節食不運動", "規律運動並注意飲食習慣", "每天只喝含糖飲料", "睡前大量吃消夜"],
-        answer: 1,
-        explanation: "身體組成的改善通常需要運動與飲食一起調整，單靠極端節食通常不理想。"
-      },
-      {
-        question: "下列哪一項最符合健康適能的學習目標？",
-        options: ["只記住定義就好", "了解概念後，能應用到自己的生活選擇", "只要考試及格", "完全不需要實踐"],
-        answer: 1,
-        explanation: "健康適能的重點不只是背知識，而是把知識變成生活中的判斷與行動。"
-      }
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getDatabase, ref, set, update, onValue, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+    // 請替換成你自己的 Firebase 專案設定
+    const firebaseConfig = {
+  apiKey: "AIzaSyBx6-rjCALvA9RH7CBeaCRFsHWZRs4naos",
+  authDomain: "health-quiz-game.firebaseapp.com",
+  databaseURL: "https://health-quiz-game-default-rtdb.firebaseio.com",
+  projectId: "health-quiz-game",
+  storageBucket: "health-quiz-game.firebasestorage.app",
+  messagingSenderId: "996780974317",
+  appId: "1:996780974317:web:b91202265db13d483cece4",
+  measurementId: "G-L78EM49YYM"
+
+    };
+
+    const firebaseReady = firebaseConfig.apiKey !== 'YOUR_API_KEY';
+    let app = null;
+    let db = null;
+
+    if (firebaseReady) {
+      app = initializeApp(firebaseConfig);
+      db = getDatabase(app);
+    } else {
+      console.warn('Firebase 尚未設定，排行榜會以本地假資料顯示。');
+    }
+
+    const characters = [
+      { id: 1, name: '兔子', avatar: '🐰' },
+      { id: 2, name: '烏龜', avatar: '🐢' },
+      { id: 3, name: '魚', avatar: '🐟' },
+      { id: 4, name: '人', avatar: '🧑' }
     ];
 
-    let currentQuestion = 0;
-    let score = 0;
-    let correctCount = 0;
+    const questionBank = [
+      { question: '想提升心肺耐力，哪一種活動最合適？', options: ['慢跑或快走', '滑手機', '躺著追劇', '只做手指運動'], answer: 0, explanation: '心肺耐力主要靠持續性的有氧運動提升，例如慢跑、快走、游泳與騎腳踏車。' },
+      { question: '長時間久坐最可能造成什麼影響？', options: ['心肺功能與代謝變差', '體能自然提升', '柔軟度變好', '睡眠一定更穩定'], answer: 0, explanation: '久坐會降低活動量，長期可能影響心肺適能、代謝健康與身體組成。' },
+      { question: '下列哪一項最接近柔軟度的概念？', options: ['爆發力很強', '關節活動範圍與伸展能力', '記憶力很好', '跑步速度很快'], answer: 1, explanation: '柔軟度是指關節活動範圍與肌肉伸展能力。' },
+      { question: '若想維持良好健康適能，哪個生活型態較理想？', options: ['熬夜配宵夜', '規律運動、均衡飲食、充足睡眠', '平日不動假日爆量運動', '只喝咖啡不吃早餐'], answer: 1, explanation: '健康適能不只靠運動，也與睡眠、飲食與日常習慣密切相關。' },
+      { question: '下列何者較屬於肌力訓練？', options: ['伏地挺身', '看運動影片', '滑手機', '午睡'], answer: 0, explanation: '伏地挺身屬於肌力與肌耐力訓練。' },
+      { question: '關於睡眠與健康適能，下列何者正確？', options: ['少睡比較能訓練意志力', '睡眠不足可能影響恢復與表現', '睡眠和運動表現無關', '年輕就不用睡太多'], answer: 1, explanation: '睡眠是恢復的重要一環，睡眠不足會影響專注力與運動表現。' },
+      { question: '若想改善身體組成，最適合的做法是？', options: ['只節食不運動', '規律運動並注意飲食習慣', '每天喝含糖飲料', '睡前大量吃消夜'], answer: 1, explanation: '身體組成的改善通常需要運動與飲食一起調整。' },
+      { question: '健康適能學習的重點是什麼？', options: ['只要背定義', '把知識應用到自己的生活選擇', '只求考試及格', '完全不需要實踐'], answer: 1, explanation: '健康適能的重點是把知識轉成生活中的判斷與實踐。' },
+      { question: '有氧運動最主要幫助哪一項能力？', options: ['心肺耐力', '記憶力', '視力', '髮量'], answer: 0, explanation: '有氧運動最直接幫助的是心肺耐力。' },
+      { question: '運動前暖身的主要目的之一是？', options: ['增加受傷風險', '讓身體準備進入活動狀態', '讓人更想睡', '讓肌力立刻翻倍'], answer: 1, explanation: '暖身能讓肌肉與關節進入活動狀態，降低受傷風險。' },
+      { question: '下列哪個習慣對健康較有幫助？', options: ['規律運動', '每天熬夜', '久坐整天', '餐餐含糖飲料'], answer: 0, explanation: '規律運動有助於維持健康適能與整體身體狀態。' },
+      { question: '肌耐力指的是什麼？', options: ['肌肉持續出力的能力', '跑步速度', '身高', '反應時間'], answer: 0, explanation: '肌耐力是肌肉持續出力、維持動作的能力。' },
+      { question: '柔軟度訓練通常包含什麼？', options: ['伸展', '熬夜', '喝含糖飲料', '完全不動'], answer: 0, explanation: '伸展是提升柔軟度的重要方式。' },
+      { question: '健康適能通常不包含下列哪一項？', options: ['心肺耐力', '肌力', '柔軟度', '運氣'], answer: 3, explanation: '健康適能常見面向包括心肺耐力、肌力/肌耐力、柔軟度與身體組成。' },
+      { question: '哪一種方式比較有助於維持運動習慣？', options: ['設定可達成的小目標', '一下子逼自己每天運動三小時', '完全不安排時間', '只靠心情'], answer: 0, explanation: '可達成的小目標比較有助於建立穩定習慣。' },
+      { question: '運動後補充水分的重要原因是？', options: ['幫助身體恢復水分平衡', '讓人更快熬夜', '增加脫水風險', '完全沒有作用'], answer: 0, explanation: '運動後補充水分有助於恢復身體狀態。' },
+      { question: '規律運動可能帶來什麼效果？', options: ['增加體力與健康', '只會更累', '讓身體退步', '完全沒差'], answer: 0, explanation: '規律運動有助於提升體力、心肺功能與整體健康。' },
+      { question: '下列何者較可能是不健康的生活模式？', options: ['規律睡眠', '均衡飲食', '長期熬夜又缺乏活動', '固定伸展'], answer: 2, explanation: '熬夜加上缺乏活動容易影響健康。' },
+      { question: '若想提升健康適能，最重要的是？', options: ['持續且規律地實踐', '只在考前背答案', '想到才做', '完全交給運氣'], answer: 0, explanation: '健康適能最重要的是持續實踐，而不只是知道答案。' },
+      { question: '大學生日常中，哪個改變最容易先開始？', options: ['每天多走路、多活動', '完全不動', '天天熬夜', '不吃任何正餐'], answer: 0, explanation: '從日常增加活動量，是最容易開始的健康行為之一。' }
+    ];
+
+    const TOTAL_QUESTIONS = 20;
+    const QUESTION_INTERVAL_MS = 4000;
+    const COIN_INTERVAL_MS = 500;
+    const QUESTION_TIME_LIMIT = 8;
+
+    const fallbackRivals = [
+      { name: '健康學長', score: 28 },
+      { name: '體能女王', score: 24 },
+      { name: '熬夜戰士', score: 18 },
+      { name: '外食王者', score: 13 }
+    ];
 
     const startScreen = document.getElementById('startScreen');
     const gameScreen = document.getElementById('gameScreen');
     const resultScreen = document.getElementById('resultScreen');
+    const characterList = document.getElementById('characterList');
     const startBtn = document.getElementById('startBtn');
-    const questionNumber = document.getElementById('questionNumber');
-    const scoreDisplay = document.getElementById('scoreDisplay');
+    const playerInput = document.getElementById('playerInput');
+    const runner = document.getElementById('runner');
+    const playerName = document.getElementById('playerName');
+    const coinCount = document.getElementById('coinCount');
+    const correctCountEl = document.getElementById('correctCount');
+    const remainingCount = document.getElementById('remainingCount');
+    const runArea = document.getElementById('runArea');
+    const questionOverlay = document.getElementById('questionOverlay');
     const questionText = document.getElementById('questionText');
     const optionsContainer = document.getElementById('optionsContainer');
     const feedbackBox = document.getElementById('feedbackBox');
-    const nextBtn = document.getElementById('nextBtn');
-    const finalScore = document.getElementById('finalScore');
-    const endingText = document.getElementById('endingText');
+    const timerBar = document.getElementById('timerBar');
+    const timerText = document.getElementById('timerText');
+    const summaryText = document.getElementById('summaryText');
+    const endingBox = document.getElementById('endingBox');
+    const rankList = document.getElementById('rankList');
+    const liveRankList = document.getElementById('liveRankList');
     const restartBtn = document.getElementById('restartBtn');
-    const progressBar = document.getElementById('progressBar');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const pauseMask = document.getElementById('pauseMask');
+    const scoreStat = document.getElementById('scoreStat');
 
-    startBtn.addEventListener('click', startGame);
-    nextBtn.addEventListener('click', goNext);
-    restartBtn.addEventListener('click', restartGame);
+    let selectedCharacter = null;
+    let playerCustomName = '';
+    let score = 0;
+    let correctCount = 0;
+    let currentQuestionIndex = 0;
+    let coinInterval = null;
+    let collisionInterval = null;
+    let nextQuestionTimeout = null;
+    let questionTimer = null;
+    let countdown = QUESTION_TIME_LIMIT;
+    let gameEnded = false;
+    let paused = false;
+    let shuffledQuestions = [];
+    let collectedCoins = 0;
+    let hasTriggeredFirstQuestion = false;
+    let sessionId = null;
+    let liveRankingCache = [];
 
-    function startGame() {
-      startScreen.classList.add('hidden');
-      gameScreen.classList.remove('hidden');
-      renderQuestion();
+    function renderCharacters() {
+      characterList.innerHTML = '';
+      characters.forEach(char => {
+        const card = document.createElement('div');
+        card.className = 'character-card';
+        card.innerHTML = `
+          <div class="avatar">${char.avatar}</div>
+          <div style="font-weight:800; font-size:1.05rem;">${char.name}</div>
+          <div style="color:#6b7280; margin-top:6px;">選我開始遊戲</div>
+        `;
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedCharacter = char;
+          validateStart();
+        });
+        characterList.appendChild(card);
+      });
     }
 
-    function renderQuestion() {
-      const q = questions[currentQuestion];
-      questionNumber.textContent = `第 ${currentQuestion + 1} 題 / ${questions.length}`;
-      scoreDisplay.textContent = `分數：${score}`;
+    function validateStart() {
+      const name = playerInput.value.trim();
+      startBtn.disabled = !(selectedCharacter && name.length > 0);
+    }
+
+    function initRealtimeRanking() {
+      if (!firebaseReady) {
+        liveRankingCache = [...fallbackRivals];
+        renderRanking([...fallbackRivals, { name: '你', score: score }], liveRankList);
+        return;
+      }
+
+      const leaderboardRef = ref(db, 'health-decision-challenge/players');
+      onValue(leaderboardRef, (snapshot) => {
+        const value = snapshot.val() || {};
+        liveRankingCache = Object.values(value)
+          .sort((a, b) => (b.score || 0) - (a.score || 0));
+        renderRanking(liveRankingCache, liveRankList);
+        if (resultScreen.classList.contains('active')) {
+          renderRanking(liveRankingCache, rankList);
+        }
+      });
+    }
+
+    async function createOrUpdatePlayerRecord(isFinished = false) {
+      if (!firebaseReady || !sessionId) return;
+      const playerRef = ref(db, `health-decision-challenge/players/${sessionId}`);
+      await update(playerRef, {
+        name: playerCustomName,
+        character: selectedCharacter?.name || '',
+        score,
+        correctCount,
+        remaining: Math.max(shuffledQuestions.length - currentQuestionIndex, 0),
+        finished: isFinished,
+        updatedAt: Date.now()
+      });
+    }
+
+    async function createSession() {
+      if (!firebaseReady) return;
+      const newRef = push(ref(db, 'health-decision-challenge/players'));
+      sessionId = newRef.key;
+      await set(newRef, {
+        name: playerCustomName,
+        character: selectedCharacter?.name || '',
+        score: 0,
+        correctCount: 0,
+        remaining: TOTAL_QUESTIONS,
+        finished: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        serverTimestamp: serverTimestamp()
+      });
+    }
+
+    function renderRanking(source, targetEl) {
+      const list = [...source]
+        .map(item => ({
+          name: item.name || '未命名玩家',
+          score: Number(item.score || 0)
+        }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
+
+      targetEl.innerHTML = '';
+      list.forEach((player, index) => {
+        const li = document.createElement('li');
+        const youTag = player.name === playerCustomName ? '（你）' : '';
+        li.innerHTML = `<span>${index + 1}. ${player.name}${youTag}</span><strong>${player.score}</strong>`;
+        targetEl.appendChild(li);
+      });
+    }
+
+    async function startGame() {
+      playerCustomName = playerInput.value.trim();
+      if (!playerCustomName || !selectedCharacter) return;
+
+      shuffledQuestions = [...questionBank].sort(() => Math.random() - 0.5).slice(0, TOTAL_QUESTIONS);
+      score = 0;
+      correctCount = 0;
+      currentQuestionIndex = 0;
+      collectedCoins = 0;
+      hasTriggeredFirstQuestion = false;
+      gameEnded = false;
+      paused = false;
+      countdown = QUESTION_TIME_LIMIT;
+
+      if (firebaseReady) {
+        await createSession();
+      }
+
+      startScreen.classList.remove('active');
+      resultScreen.classList.remove('active');
+      gameScreen.classList.add('active');
+
+      playerName.textContent = playerCustomName;
+      runner.textContent = selectedCharacter.avatar;
+      pauseBtn.disabled = false;
+      pauseBtn.textContent = '⏸ 暫停';
+      runArea.classList.remove('paused');
+      pauseMask.classList.remove('show');
+      questionOverlay.classList.remove('show');
+      feedbackBox.className = 'feedback';
+      feedbackBox.innerHTML = '';
+      removeAllCoins();
+      updateStats();
+      startCoinSpawner();
+      startCollisionWatcher();
+    }
+
+    function startCoinSpawner() {
+      clearInterval(coinInterval);
+      coinInterval = setInterval(() => {
+        if (gameEnded || paused || questionOverlay.classList.contains('show')) return;
+        spawnCoin();
+      }, COIN_INTERVAL_MS);
+    }
+
+    function startCollisionWatcher() {
+      clearInterval(collisionInterval);
+      collisionInterval = setInterval(() => {
+        if (gameEnded || paused || questionOverlay.classList.contains('show')) return;
+        checkCollision();
+      }, 50);
+    }
+
+    function spawnCoin() {
+      const coin = document.createElement('div');
+      coin.className = 'coin';
+      coin.textContent = '🪙';
+      coin.style.bottom = '118px';
+      runArea.appendChild(coin);
+      setTimeout(() => {
+        if (coin.parentNode) coin.remove();
+      }, 4500);
+    }
+
+    function checkCollision() {
+      const runnerRect = runner.getBoundingClientRect();
+      const coins = runArea.querySelectorAll('.coin');
+
+      coins.forEach(coin => {
+        if (coin.classList.contains('collected')) return;
+
+        const coinRect = coin.getBoundingClientRect();
+        const isColliding = !(
+          runnerRect.right < coinRect.left ||
+          runnerRect.left > coinRect.right ||
+          runnerRect.bottom < coinRect.top ||
+          runnerRect.top > coinRect.bottom
+        );
+
+        if (isColliding) {
+          collectCoin(coin);
+        }
+      });
+    }
+
+    function collectCoin(coin) {
+      coin.classList.add('collected');
+      score += 1;
+      collectedCoins += 1;
+      updateStats();
+      animateScoreGain('+1', 'success');
+
+      setTimeout(() => {
+        if (coin.parentNode) coin.remove();
+      }, 300);
+
+      if (!hasTriggeredFirstQuestion && collectedCoins >= 3) {
+        hasTriggeredFirstQuestion = true;
+        showQuestion();
+      }
+    }
+
+    async function updateStats() {
+      coinCount.textContent = String(score);
+      correctCountEl.textContent = String(correctCount);
+      remainingCount.textContent = String(Math.max(shuffledQuestions.length - currentQuestionIndex, 0));
+      if (firebaseReady) {
+        await createOrUpdatePlayerRecord(false);
+      } else {
+        renderRanking([...fallbackRivals, { name: playerCustomName || '你', score }], liveRankList);
+      }
+    }
+
+    function showQuestion() {
+      if (gameEnded || paused) return;
+      if (currentQuestionIndex >= shuffledQuestions.length) {
+        endGame();
+        return;
+      }
+
+      const q = shuffledQuestions[currentQuestionIndex];
+      questionOverlay.classList.add('show');
+      runArea.classList.add('paused');
       questionText.textContent = q.question;
       optionsContainer.innerHTML = '';
       feedbackBox.className = 'feedback';
       feedbackBox.innerHTML = '';
-      nextBtn.classList.add('hidden');
-      progressBar.style.width = `${(currentQuestion / questions.length) * 100}%`;
+      countdown = QUESTION_TIME_LIMIT;
+      updateTimerUI();
+      pauseBtn.disabled = true;
 
       q.options.forEach((option, index) => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.textContent = option;
-        btn.addEventListener('click', () => selectAnswer(index, btn));
+        btn.addEventListener('click', () => answerQuestion(index, btn));
         optionsContainer.appendChild(btn);
       });
+
+      clearInterval(questionTimer);
+      questionTimer = setInterval(() => {
+        if (paused) return;
+        countdown -= 1;
+        updateTimerUI();
+        if (countdown <= 0) {
+          clearInterval(questionTimer);
+          timeoutQuestion();
+        }
+      }, 1000);
     }
 
-    function selectAnswer(selectedIndex, selectedBtn) {
-      const q = questions[currentQuestion];
+    function updateTimerUI() {
+      timerText.textContent = `剩餘 ${countdown} 秒`;
+      timerBar.style.width = `${(countdown / QUESTION_TIME_LIMIT) * 100}%`;
+    }
+
+    function answerQuestion(selectedIndex, selectedBtn) {
+      clearInterval(questionTimer);
+      const q = shuffledQuestions[currentQuestionIndex];
       const buttons = document.querySelectorAll('.option-btn');
-      buttons.forEach(btn => btn.disabled = true);
+      buttons.forEach(btn => { btn.disabled = true; });
 
       if (selectedIndex === q.answer) {
         selectedBtn.classList.add('correct');
-        score += 10;
         correctCount += 1;
-        feedbackBox.innerHTML = `<strong>答對了！</strong>${q.explanation}`;
+        score += 10;
+        feedbackBox.innerHTML = `<strong>答對了！+10 分</strong><br>${q.explanation}`;
+        animateScoreGain('+10', 'success');
       } else {
         selectedBtn.classList.add('wrong');
-        buttons[q.answer].classList.add('correct');
-        feedbackBox.innerHTML = `<strong>答錯了！</strong>${q.explanation}`;
+        if (buttons[q.answer]) buttons[q.answer].classList.add('correct');
+        score -= 5;
+        feedbackBox.innerHTML = `<strong>答錯了！-5 分</strong><br>${q.explanation}`;
+        animateScoreGain('-5', 'danger');
       }
 
-      scoreDisplay.textContent = `分數：${score}`;
       feedbackBox.classList.add('show');
-      nextBtn.classList.remove('hidden');
+      updateStats();
+      setTimeout(closeQuestionAndContinue, 1800);
     }
 
-    function goNext() {
-      currentQuestion += 1;
-      if (currentQuestion < questions.length) {
-        renderQuestion();
-      } else {
-        showResult();
+    function timeoutQuestion() {
+      const q = shuffledQuestions[currentQuestionIndex];
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach(btn => { btn.disabled = true; });
+      if (buttons[q.answer]) buttons[q.answer].classList.add('correct');
+      score -= 5;
+      feedbackBox.innerHTML = `<strong>超時！-5 分</strong><br>${q.explanation}`;
+      feedbackBox.classList.add('show');
+      animateScoreGain('-5', 'danger');
+      updateStats();
+      setTimeout(closeQuestionAndContinue, 1800);
+    }
+
+    function closeQuestionAndContinue() {
+      questionOverlay.classList.remove('show');
+      runArea.classList.remove('paused');
+      pauseBtn.disabled = false;
+      currentQuestionIndex += 1;
+      updateStats();
+      scheduleNextQuestion();
+    }
+
+    function scheduleNextQuestion() {
+      clearTimeout(nextQuestionTimeout);
+      if (currentQuestionIndex >= shuffledQuestions.length) {
+        endGame();
+        return;
       }
+      nextQuestionTimeout = setTimeout(() => {
+        if (!gameEnded && !paused && !questionOverlay.classList.contains('show')) {
+          showQuestion();
+        }
+      }, QUESTION_INTERVAL_MS);
+    }
+
+    function animateScoreGain(text, type = 'success') {
+      const floating = document.createElement('div');
+      floating.className = 'floating-score';
+      floating.textContent = text;
+      floating.style.color = type === 'danger' ? '#ef4444' : '#fbbf24';
+      document.body.appendChild(floating);
+
+      const startX = window.innerWidth / 2;
+      const startY = window.innerHeight / 2;
+      const targetRect = scoreStat.getBoundingClientRect();
+      const endX = targetRect.left + targetRect.width / 2;
+      const endY = targetRect.top + targetRect.height / 2;
+
+      floating.style.left = `${startX}px`;
+      floating.style.top = `${startY}px`;
+      floating.style.opacity = '1';
+      floating.style.transform = 'translate(-50%, -50%) scale(1.2)';
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          floating.style.transform = `translate(${endX - startX}px, ${endY - startY}px) scale(0.4)`;
+          floating.style.opacity = '0';
+        }, 30);
+      });
+
+      setTimeout(() => floating.remove(), 1450);
+    }
+
+    function togglePause() {
+      if (gameEnded || questionOverlay.classList.contains('show')) return;
+      paused = !paused;
+      runArea.classList.toggle('paused', paused);
+      pauseMask.classList.toggle('show', paused);
+      pauseBtn.textContent = paused ? '▶ 繼續' : '⏸ 暫停';
+
+      if (paused) {
+        clearTimeout(nextQuestionTimeout);
+      } else if (hasTriggeredFirstQuestion && currentQuestionIndex < shuffledQuestions.length) {
+        scheduleNextQuestion();
+      }
+    }
+
+    function removeAllCoins() {
+      runArea.querySelectorAll('.coin').forEach(coin => coin.remove());
+    }
+
+    function clearGameTimers() {
+      clearInterval(coinInterval);
+      clearInterval(collisionInterval);
+      clearTimeout(nextQuestionTimeout);
+      clearInterval(questionTimer);
     }
 
     function getEnding() {
-      if (correctCount <= 2) {
-        return {
-          title: '🛋️ 久坐迷航型',
-          text: '你目前對健康適能的掌握還在起步中，可能平常比較少注意運動、睡眠與生活習慣。建議先從每天增加活動量開始。'
-        };
-      } else if (correctCount <= 4) {
-        return {
-          title: '🍟 外食生存型',
-          text: '你已經有一些健康概念，但還不夠穩定。你的生活可能常在忙碌、外食與不規律中切換，還有進步空間。'
-        };
-      } else if (correctCount <= 6) {
-        return {
-          title: '😐 普通維持型',
-          text: '你的健康知識基礎不錯，已經知道不少正確觀念。若再把知識轉成穩定行動，就能更接近健康達人。'
-        };
+      if (correctCount <= 5) {
+        return { title: '🛋️ 久坐迷航型', text: '你這次比較像靠直覺闖關，健康適能觀念還有很多進步空間。建議先從每天多活動開始。' };
+      }
+      if (correctCount <= 10) {
+        return { title: '🍔 外食生存型', text: '你已經有部分觀念，但在時間壓力下還不夠穩定。再多練習，你會更強。' };
+      }
+      if (correctCount <= 15) {
+        return { title: '😐 普通維持型', text: '你的健康適能基礎不錯，多數題目都能掌握，再穩定一點就能進入高分組。' };
+      }
+      return { title: '💪 健康達人型', text: '你在時間壓力下依然能做出不少正確判斷，代表你真的懂健康適能。' };
+    }
+
+    async function endGame() {
+      gameEnded = true;
+      clearGameTimers();
+      removeAllCoins();
+      if (firebaseReady) {
+        await createOrUpdatePlayerRecord(true);
+      }
+      gameScreen.classList.remove('active');
+      resultScreen.classList.add('active');
+
+      const ending = getEnding();
+      summaryText.innerHTML = `名稱：<strong>${playerCustomName}</strong><br>角色：<strong>${selectedCharacter.name}</strong><br>總分：<strong>${score}</strong><br>答對題數：<strong>${correctCount} / ${shuffledQuestions.length}</strong>`;
+      endingBox.innerHTML = `<strong style="font-size:1.2rem; display:block; margin-bottom:8px;">${ending.title}</strong>${ending.text}`;
+
+      if (firebaseReady) {
+        renderRanking(liveRankingCache, rankList);
       } else {
-        return {
-          title: '💪 健康達人型',
-          text: '你對健康適能有不錯的理解，已經掌握運動、睡眠、飲食與身體組成的重要觀念。繼續保持！'
-        };
+        renderRanking([...fallbackRivals, { name: playerCustomName, score }], rankList);
       }
     }
 
-    function showResult() {
-      gameScreen.classList.add('hidden');
-      resultScreen.classList.add('show');
-      progressBar.style.width = '100%';
-      finalScore.textContent = `${score} 分`;
-      const ending = getEnding();
-      endingText.innerHTML = `<strong style="font-size:1.2rem; display:block; margin-bottom:8px;">${ending.title}</strong>${ending.text}`;
+    function restartGame() {
+      clearGameTimers();
+      removeAllCoins();
+      questionOverlay.classList.remove('show');
+      pauseMask.classList.remove('show');
+      runArea.classList.remove('paused');
+      gameScreen.classList.remove('active');
+      resultScreen.classList.remove('active');
+      startScreen.classList.add('active');
+      paused = false;
+      gameEnded = false;
+      validateStart();
     }
 
-    function restartGame() {
-      currentQuestion = 0;
-      score = 0;
-      correctCount = 0;
-      resultScreen.classList.remove('show');
-      startScreen.classList.remove('hidden');
-      gameScreen.classList.add('hidden');
-      progressBar.style.width = '0%';
+    function runSelfTests() {
+      console.assert(Array.isArray(characters) && characters.length === 4, 'characters should contain 4 options');
+      console.assert(questionBank.length >= TOTAL_QUESTIONS, 'question bank should have enough questions');
+      console.assert(QUESTION_INTERVAL_MS === 4000, 'question interval should be 4000ms');
+      console.assert(COIN_INTERVAL_MS === 500, 'coin interval should be 500ms');
+      console.assert(typeof startCoinSpawner === 'function', 'startCoinSpawner should exist');
+      console.assert(typeof checkCollision === 'function', 'checkCollision should exist');
     }
+
+    playerInput.addEventListener('input', validateStart);
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', restartGame);
+    pauseBtn.addEventListener('click', togglePause);
+
+    renderCharacters();
+    validateStart();
+    initRealtimeRanking();
+    runSelfTests();
   </script>
 </body>
 </html>
