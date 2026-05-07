@@ -16,6 +16,9 @@
       --success: #16a34a;
       --coin: #fbbf24;
       --border: #dbe3ef;
+      --easy: #16a34a;
+      --normal: #eab308;
+      --hard: #f97316;
     }
 
     * { box-sizing: border-box; }
@@ -28,11 +31,7 @@
       min-height: 100vh;
     }
 
-    .app {
-      max-width: 1220px;
-      margin: 0 auto;
-      padding: 20px;
-    }
+    .app { max-width: 1220px; margin: 0 auto; padding: 20px; }
 
     .panel {
       background: var(--card);
@@ -42,451 +41,220 @@
       overflow: hidden;
     }
 
-    .header {
-      padding: 24px 24px 8px;
-      text-align: center;
-    }
+    .header { padding: 24px 24px 8px; text-align: center; }
+    .header h1 { margin: 0; font-size: 2rem; }
+    .header p { color: var(--muted); margin: 8px 0 0; }
 
-    .header h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
-
-    .header p {
-      color: var(--muted);
-      margin: 8px 0 0;
-    }
-
-    .screen {
-      display: none;
-      padding: 24px;
-    }
-
+    .screen { display: none; padding: 24px; }
     .screen.active { display: block; }
 
-    .input-group {
-      margin: 20px 0 8px;
-    }
-
-    .input-group label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
+    .input-group { margin: 20px 0 8px; }
+    .input-group label { display: block; font-weight: 700; margin-bottom: 8px; }
 
     .name-input {
-      width: 100%;
-      max-width: 320px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 1rem;
-      outline: none;
+      width: 100%; max-width: 320px; border: 1px solid var(--border);
+      border-radius: 14px; padding: 12px 14px; font-size: 1rem; outline: none;
     }
-
-    .name-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
-    }
+    .name-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
 
     .rules {
-      background: #f8fbff;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px 18px;
-      margin: 18px 0 22px;
-      line-height: 1.8;
+      background: #f8fbff; border: 1px solid var(--border); border-radius: 18px;
+      padding: 16px 18px; margin: 18px 0 22px; line-height: 1.8;
     }
-
-    .rules h3 {
-      margin: 0 0 8px;
-      font-size: 1.05rem;
-    }
-
-    .rules ul {
-      margin: 0;
-      padding-left: 20px;
-    }
+    .rules h3 { margin: 0 0 8px; font-size: 1.05rem; }
+    .rules ul { margin: 0; padding-left: 20px; }
 
     .characters {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin: 20px 0 24px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px; margin: 20px 0 24px;
     }
 
     .character-card {
-      border: 2px solid var(--border);
-      border-radius: 20px;
-      padding: 18px;
-      text-align: center;
-      cursor: pointer;
-      background: #fff;
-      transition: 0.2s ease;
+      border: 2px solid var(--border); border-radius: 20px; padding: 18px;
+      text-align: center; cursor: pointer; background: #fff; transition: 0.2s ease;
     }
-
-    .character-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.06);
-    }
-
-    .character-card.selected {
-      border-color: var(--primary);
-      background: #eff6ff;
-    }
-
-    .avatar {
-      font-size: 3rem;
-      margin-bottom: 8px;
-    }
+    .character-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); }
+    .character-card.selected { border-color: var(--primary); background: #eff6ff; }
+    .avatar { font-size: 3rem; margin-bottom: 8px; }
 
     .btn {
-      border: none;
-      border-radius: 14px;
-      padding: 14px 18px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      background: var(--primary);
-      color: #fff;
+      border: none; border-radius: 14px; padding: 14px 18px; font-size: 1rem;
+      font-weight: 700; cursor: pointer; background: var(--primary); color: #fff;
       transition: 0.2s ease;
     }
-
     .btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-    .game-layout {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 16px;
-      align-items: start;
-    }
+    .game-layout { display: grid; grid-template-columns: 280px 1fr; gap: 16px; align-items: start; }
 
     .side-rank {
-      background: rgba(255,255,255,0.92);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 16px;
-      position: sticky;
-      top: 20px;
+      background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+      border-radius: 20px; padding: 16px; position: sticky; top: 20px;
+      max-height: 620px; overflow: auto;
     }
+    .side-rank h3 { margin: 0 0 8px; font-size: 1.1rem; }
+    .own-rank-note { color: var(--text); font-size: 0.92rem; line-height: 1.5; margin-top: 12px; padding: 12px; border-radius: 14px; background: #eef6ff; border: 1px solid #bfdbfe; font-weight: 800; }
 
-    .side-rank h3 {
-      margin: 0 0 8px;
-      font-size: 1.1rem;
-    }
-
-    .rank-list {
-      margin: 8px 0 0;
-      padding: 0;
-      list-style: none;
-    }
-
+    .rank-list { margin: 8px 0 0; padding: 0; list-style: none; max-height: 430px; overflow-y: auto; }
     .rank-list li {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px dashed #e5e7eb;
-      font-size: 0.96rem;
+      display: flex; justify-content: space-between; gap: 10px; padding: 10px 8px;
+      border-bottom: 1px dashed #e5e7eb; font-size: 0.96rem; border-radius: 12px;
+      transition: background 0.25s ease, transform 0.25s ease;
+    }
+    .rank-list li.own-rank { background: #eff6ff; font-weight: 800; color: #1d4ed8; }
+    .rank-list li.rank-bump { animation: rankBump 0.65s ease; }
+    @keyframes rankBump {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.07); background: #fef3c7; }
+      70% { transform: scale(0.98); }
+      100% { transform: scale(1); }
     }
 
     .topbar {
-      display: grid;
-      grid-template-columns: 120px repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-      align-items: center;
+      display: grid; grid-template-columns: 120px 120px repeat(4, 1fr); gap: 12px;
+      margin-bottom: 16px; align-items: center;
     }
 
     .pause-btn {
-      border: none;
-      border-radius: 16px;
-      background: #111827;
-      color: #fff;
-      font-weight: 800;
-      padding: 14px 10px;
-      cursor: pointer;
-      font-size: 1rem;
+      border: none; border-radius: 16px; background: #111827; color: #fff;
+      font-weight: 800; padding: 14px 10px; cursor: pointer; font-size: 1rem;
     }
-
-    .pause-btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
+    .pause-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .end-btn { background: #b91c1c; }
 
     .stat {
-      background: rgba(255,255,255,0.92);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 12px;
-      text-align: center;
-      position: relative;
-      overflow: visible;
+      background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+      border-radius: 18px; padding: 12px; text-align: center; position: relative; overflow: visible;
     }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 0.88rem;
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-size: 1.25rem;
-      font-weight: 800;
-    }
+    .stat-label { color: var(--muted); font-size: 0.88rem; margin-bottom: 4px; }
+    .stat-value { font-size: 1.25rem; font-weight: 800; }
 
     .run-area {
-      position: relative;
-      height: 340px;
-      border-radius: 24px;
-      overflow: hidden;
+      position: relative; height: 360px; border-radius: 24px; overflow: hidden;
       background: linear-gradient(180deg, #bfdbfe 0%, #e0f2fe 48%, #bbf7d0 49%, #86efac 100%);
-      border: 1px solid var(--border);
-      margin-bottom: 18px;
+      border: 1px solid var(--border); margin-bottom: 18px; cursor: pointer;
     }
 
     .cloud, .cloud2 {
-      position: absolute;
-      color: rgba(255,255,255,0.9);
-      font-size: 3rem;
-      animation: drift 18s linear infinite;
+      position: absolute; color: rgba(255,255,255,0.9); font-size: 3rem; animation: drift 18s linear infinite;
     }
-
     .cloud { top: 18px; left: -80px; }
     .cloud2 { top: 64px; left: -180px; animation-duration: 24s; }
-
-    @keyframes drift {
-      from { transform: translateX(0); }
-      to { transform: translateX(1280px); }
-    }
+    @keyframes drift { from { transform: translateX(0); } to { transform: translateX(1280px); } }
 
     .road {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 88px;
-      background: #4b5563;
+      position: absolute; left: 0; right: 0; bottom: 0; height: 88px; background: #4b5563; overflow: hidden;
     }
-
     .road::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 38px;
-      height: 10px;
-      background-image: repeating-linear-gradient(90deg, #fff 0 34px, transparent 34px 74px);
-      animation: roadMove 0.6s linear infinite;
+      content: ""; position: absolute; left: 0; right: 0; top: 38px; height: 10px;
+      background: repeating-linear-gradient(90deg, #fff 0 42px, transparent 42px 110px);
+      background-size: 110px 10px;
+      animation: roadMove 1.05s linear infinite;
     }
-
-    @keyframes roadMove {
-      from { background-position-x: 0; }
-      to { background-position-x: -74px; }
-    }
+    @keyframes roadMove { from { background-position-x: 0; } to { background-position-x: 110px; } }
 
     .runner {
-      position: absolute;
-      bottom: 84px;
-      right: 110px;
-      font-size: 4rem;
-      animation: runBounce 0.4s ease-in-out infinite alternate;
-      z-index: 3;
-      user-select: none;
+      position: absolute; bottom: 84px; right: 110px; font-size: 4rem;
+      animation: runBounce 0.4s ease-in-out infinite alternate; z-index: 3; user-select: none;
+      transform-origin: center bottom;
+    }
+    @keyframes runBounce { from { translate: 0 0; } to { translate: 0 -10px; } }
+    .runner.jumping { animation: jumpAnim 0.72s ease-out !important; }
+    @keyframes jumpAnim {
+      0% { translate: 0 0; }
+      45% { translate: 0 -118px; }
+      100% { translate: 0 0; }
     }
 
-    @keyframes runBounce {
-      from { transform: translateY(0); }
-      to { transform: translateY(-10px); }
-    }
-
-    .paused .runner,
-    .paused .road::before,
-    .paused .cloud,
-    .paused .cloud2,
-    .paused .coin {
+    .paused .runner, .paused .road::before, .paused .cloud, .paused .cloud2, .paused .coin {
       animation-play-state: paused !important;
     }
 
     .coin {
-      position: absolute;
-      bottom: 118px;
-      left: -48px;
-      font-size: 1.8rem;
-      animation: coinMove 4.5s linear forwards;
-      z-index: 2;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-      user-select: none;
-      pointer-events: none;
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      position: absolute; left: -48px; font-size: 1.8rem; animation: coinMove 4.5s linear forwards;
+      z-index: 2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); user-select: none;
+      pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease;
     }
-
-    .coin.collected {
-      opacity: 0;
-      transform: translateY(-36px) scale(1.2);
-    }
-
-    @keyframes coinMove {
-      from { transform: translateX(0); }
-      to { transform: translateX(1280px); }
-    }
+    .coin.low { bottom: 118px; }
+    .coin.high { bottom: 225px; font-size: 1.95rem; }
+    .coin.collected { opacity: 0; transform: translateY(-36px) scale(1.2); }
+    @keyframes coinMove { from { translate: 0 0; } to { translate: 1280px 0; } }
 
     .floating-score {
-      position: fixed;
-      z-index: 999;
-      pointer-events: none;
-      font-weight: 900;
-      font-size: 1.6rem;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      transition: transform 1.4s ease, opacity 1.4s ease;
+      position: fixed; z-index: 999; pointer-events: none; font-weight: 900; font-size: 1.6rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 1.4s ease, opacity 1.4s ease;
     }
 
     .question-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 5;
+      position: absolute; inset: 0; background: rgba(15, 23, 42, 0.55); display: none;
+      align-items: center; justify-content: center; padding: 20px; z-index: 5; cursor: default;
     }
-
     .question-overlay.show { display: flex; }
-
     .question-box {
-      width: min(700px, 100%);
-      background: #fff;
-      border-radius: 24px;
-      padding: 22px;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+      width: min(720px, 100%); background: #fff; border-radius: 24px; padding: 22px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.18); border: 5px solid var(--easy);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
+    .question-box.question-easy {
+      border-color: var(--easy);
+      background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 78%);
+      box-shadow: 0 16px 40px rgba(22,163,74,0.25);
+    }
+    .question-box.question-normal {
+      border-color: var(--normal);
+      background: linear-gradient(180deg, #fefce8 0%, #ffffff 78%);
+      box-shadow: 0 16px 40px rgba(234,179,8,0.28);
+    }
+    .question-box.question-hard {
+      border-color: var(--hard);
+      background: linear-gradient(180deg, #fff7ed 0%, #ffffff 78%);
+      box-shadow: 0 16px 40px rgba(249,115,22,0.32);
+    }
+    .question-meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .difficulty-badge {
+      display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; color: #fff;
+      padding: 8px 12px; font-weight: 900; font-size: 0.95rem;
+    }
+    .difficulty-easy { background: var(--easy); }
+    .difficulty-normal { background: var(--normal); color: #422006; }
+    .difficulty-hard { background: var(--hard); }
 
     .timer-wrap { margin-bottom: 12px; }
-
-    .timer-bar-bg {
-      width: 100%;
-      height: 12px;
-      border-radius: 999px;
-      background: #e5e7eb;
-      overflow: hidden;
-    }
-
-    .timer-bar {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, #f59e0b, #ef4444);
-      transition: width 1s linear;
-    }
-
-    .timer-text {
-      margin-top: 8px;
-      color: var(--danger);
-      font-weight: 700;
-      text-align: right;
-    }
-
-    .question-title {
-      font-size: 1.25rem;
-      line-height: 1.6;
-      font-weight: 800;
-      margin-bottom: 16px;
-    }
-
-    .options {
-      display: grid;
-      gap: 10px;
-    }
-
+    .timer-bar-bg { width: 100%; height: 12px; border-radius: 999px; background: #e5e7eb; overflow: hidden; }
+    .timer-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #f59e0b, #ef4444); transition: width 1s linear; }
+    .timer-text { color: var(--danger); font-weight: 700; text-align: right; white-space: nowrap; }
+    .question-title { font-size: 1.25rem; line-height: 1.6; font-weight: 800; margin-bottom: 16px; }
+    .options { display: grid; gap: 10px; }
     .option-btn {
-      border: 1px solid var(--border);
-      background: #fff;
-      border-radius: 16px;
-      padding: 14px 16px;
-      text-align: left;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.2s ease;
+      border: 1px solid var(--border); background: #fff; border-radius: 16px; padding: 14px 16px;
+      text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s ease;
     }
-
-    .option-btn:hover:not(:disabled) {
-      border-color: var(--primary);
-      background: #eff6ff;
-    }
-
-    .option-btn.correct {
-      border-color: var(--success);
-      background: #ecfdf5;
-      color: #166534;
-      font-weight: 700;
-    }
-
-    .option-btn.wrong {
-      border-color: var(--danger);
-      background: #fef2f2;
-      color: #991b1b;
-      font-weight: 700;
-    }
-
+    .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #eff6ff; }
+    .option-btn.correct { border-color: var(--success); background: #ecfdf5; color: #166534; font-weight: 700; }
+    .option-btn.wrong { border-color: var(--danger); background: #fef2f2; color: #991b1b; font-weight: 700; }
     .feedback {
-      display: none;
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      background: #f8fafc;
-      line-height: 1.7;
+      display: none; margin-top: 14px; padding: 14px; border-radius: 16px; border: 1px solid var(--border);
+      background: #f8fafc; line-height: 1.7;
     }
-
     .feedback.show { display: block; }
-
-    .mini-hint {
-      color: var(--muted);
-      margin-top: 10px;
-      font-size: 0.95rem;
-    }
+    .mini-hint { color: var(--muted); margin-top: 10px; font-size: 0.95rem; }
 
     .pause-mask {
-      position: absolute;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.45);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 4;
-      color: #fff;
-      font-size: 2rem;
-      font-weight: 900;
+      position: absolute; inset: 0; background: rgba(15, 23, 42, 0.45); display: none;
+      align-items: center; justify-content: center; z-index: 4; color: #fff; font-size: 2rem; font-weight: 900;
     }
-
     .pause-mask.show { display: flex; }
+    .result-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 18px; margin-top: 20px; }
+    .result-card { border: 1px solid var(--border); border-radius: 22px; padding: 20px; background: #fff; }
+    .coins-tip { color: var(--muted); font-size: 0.95rem; margin-top: 6px; }
 
-    .result-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 18px;
-      margin-top: 20px;
-    }
-
-    .result-card {
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 20px;
-      background: #fff;
-    }
-
-    .coins-tip {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-top: 6px;
-    }
+    .sound-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .small-btn { padding: 10px 12px; font-size: 0.9rem; border-radius: 12px; background: #0f172a; }
 
     @media (max-width: 980px) {
       .game-layout { grid-template-columns: 1fr; }
-      .side-rank { position: static; }
+      .side-rank { position: static; max-height: 280px; }
     }
-
     @media (max-width: 860px) {
       .topbar { grid-template-columns: repeat(2, 1fr); }
       .result-grid { grid-template-columns: 1fr; }
@@ -512,10 +280,14 @@
           <h3>遊戲規則</h3>
           <ul>
             <li>輸入名稱並選擇角色開始遊戲。</li>
-            <li>撿到金幣 +1 分。</li>
-            <li>答對加分，答錯或超時扣 5 分（可能變負分）。</li>
-            <li>共 20 題，答完遊戲結束。</li>
+            <li>點擊畫面可以跳躍，撿到金幣 +1 分，高處金幣要跳起來才拿得到。</li>
+            <li>答對依難度加分：簡單 +5、普通 +10、困難 +15。</li>
+            <li>答錯或超時扣 5 分（可能變負分）。</li>
+            <li>共 10 題，答完遊戲結束。</li>
           </ul>
+          <div class="sound-row">
+            <button class="btn small-btn" id="soundBtn" type="button">🔊 音樂：開</button>
+          </div>
         </div>
 
         <h2>選擇你的角色</h2>
@@ -528,30 +300,20 @@
           <aside class="side-rank">
             <h3>即時排行榜</h3>
             <ul class="rank-list" id="liveRankList"></ul>
+            <div class="own-rank-note" id="ownRankNote">你的即時分數：0｜目前排名：—</div>
           </aside>
 
           <div>
             <div class="topbar">
               <button class="pause-btn" id="pauseBtn">⏸ 暫停</button>
-              <div class="stat">
-                <div class="stat-label">名稱</div>
-                <div class="stat-value" id="playerName">—</div>
-              </div>
-              <div class="stat" id="scoreStat">
-                <div class="stat-label">分數</div>
-                <div class="stat-value" id="coinCount">0</div>
-              </div>
-              <div class="stat">
-                <div class="stat-label">答對題數</div>
-                <div class="stat-value" id="correctCount">0</div>
-              </div>
-              <div class="stat">
-                <div class="stat-label">剩餘題數</div>
-                <div class="stat-value" id="remainingCount">20</div>
-              </div>
+              <button class="pause-btn end-btn" id="endBtn">⏹ 結束</button>
+              <div class="stat"><div class="stat-label">名稱</div><div class="stat-value" id="playerName">—</div></div>
+              <div class="stat" id="scoreStat"><div class="stat-label">分數</div><div class="stat-value" id="coinCount">0</div></div>
+              <div class="stat"><div class="stat-label">答對題數</div><div class="stat-value" id="correctCount">0</div></div>
+              <div class="stat"><div class="stat-label">剩餘題數</div><div class="stat-value" id="remainingCount">10</div></div>
             </div>
 
-            <div class="run-area" id="runArea">
+            <div class="run-area" id="runArea" title="點擊畫面跳躍">
               <div class="cloud">☁️</div>
               <div class="cloud2">☁️</div>
               <div class="runner" id="runner">🐰</div>
@@ -560,10 +322,11 @@
 
               <div class="question-overlay" id="questionOverlay">
                 <div class="question-box">
-                  <div class="timer-wrap">
-                    <div class="timer-bar-bg"><div class="timer-bar" id="timerBar"></div></div>
+                  <div class="question-meta">
+                    <span class="difficulty-badge difficulty-easy" id="difficultyBadge">簡單 +5</span>
                     <div class="timer-text" id="timerText">剩餘 8 秒</div>
                   </div>
+                  <div class="timer-wrap"><div class="timer-bar-bg"><div class="timer-bar" id="timerBar"></div></div></div>
                   <div class="question-title" id="questionText"></div>
                   <div class="options" id="optionsContainer"></div>
                   <div class="feedback" id="feedbackBox"></div>
@@ -572,7 +335,7 @@
               </div>
             </div>
 
-            <div class="coins-tip">提示：此版本使用 Firebase Realtime Database 進行連線同步排行與玩家紀錄。</div>
+            <div class="coins-tip">提示：點擊遊戲畫面或按空白鍵可以跳躍。背景音樂會在開始遊戲後播放。</div>
           </div>
         </div>
       </section>
@@ -584,9 +347,7 @@
             <h3>你的成績</h3>
             <p id="summaryText"></p>
             <div id="endingBox" style="line-height:1.8;"></div>
-            <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
-              <button class="btn" id="restartBtn">再玩一次</button>
-            </div>
+            <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;"><button class="btn" id="restartBtn">再玩一次</button></div>
           </div>
           <div class="result-card">
             <h3>最終排行榜</h3>
@@ -601,29 +362,20 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import { getDatabase, ref, set, update, onValue, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
-    // 請替換成你自己的 Firebase 專案設定
     const firebaseConfig = {
-  apiKey: "AIzaSyBx6-rjCALvA9RH7CBeaCRFsHWZRs4naos",
-  authDomain: "health-quiz-game.firebaseapp.com",
-  databaseURL: "https://health-quiz-game-default-rtdb.firebaseio.com",
-  projectId: "health-quiz-game",
-  storageBucket: "health-quiz-game.firebasestorage.app",
-  messagingSenderId: "996780974317",
-  appId: "1:996780974317:web:b91202265db13d483cece4",
-  measurementId: "G-L78EM49YYM"
-
+      apiKey: "AIzaSyBx6-rjCALvA9RH7CBeaCRFsHWZRs4naos",
+      authDomain: "health-quiz-game.firebaseapp.com",
+      databaseURL: "https://health-quiz-game-default-rtdb.firebaseio.com",
+      projectId: "health-quiz-game",
+      storageBucket: "health-quiz-game.firebasestorage.app",
+      messagingSenderId: "996780974317",
+      appId: "1:996780974317:web:b91202265db13d483cece4",
+      measurementId: "G-L78EM49YYM"
     };
 
     const firebaseReady = firebaseConfig.apiKey !== 'YOUR_API_KEY';
-    let app = null;
-    let db = null;
-
-    if (firebaseReady) {
-      app = initializeApp(firebaseConfig);
-      db = getDatabase(app);
-    } else {
-      console.warn('Firebase 尚未設定，排行榜會以本地假資料顯示。');
-    }
+    const app = firebaseReady ? initializeApp(firebaseConfig) : null;
+    const db = firebaseReady ? getDatabase(app) : null;
 
     const characters = [
       { id: 1, name: '兔子', avatar: '🐰' },
@@ -633,66 +385,70 @@
     ];
 
     const questionBank = [
-      { question: '想提升心肺耐力，哪一種活動最合適？', options: ['慢跑或快走', '滑手機', '躺著追劇', '只做手指運動'], answer: 0, explanation: '心肺耐力主要靠持續性的有氧運動提升，例如慢跑、快走、游泳與騎腳踏車。' },
-      { question: '長時間久坐最可能造成什麼影響？', options: ['心肺功能與代謝變差', '體能自然提升', '柔軟度變好', '睡眠一定更穩定'], answer: 0, explanation: '久坐會降低活動量，長期可能影響心肺適能、代謝健康與身體組成。' },
-      { question: '下列哪一項最接近柔軟度的概念？', options: ['爆發力很強', '關節活動範圍與伸展能力', '記憶力很好', '跑步速度很快'], answer: 1, explanation: '柔軟度是指關節活動範圍與肌肉伸展能力。' },
-      { question: '若想維持良好健康適能，哪個生活型態較理想？', options: ['熬夜配宵夜', '規律運動、均衡飲食、充足睡眠', '平日不動假日爆量運動', '只喝咖啡不吃早餐'], answer: 1, explanation: '健康適能不只靠運動，也與睡眠、飲食與日常習慣密切相關。' },
-      { question: '下列何者較屬於肌力訓練？', options: ['伏地挺身', '看運動影片', '滑手機', '午睡'], answer: 0, explanation: '伏地挺身屬於肌力與肌耐力訓練。' },
-      { question: '關於睡眠與健康適能，下列何者正確？', options: ['少睡比較能訓練意志力', '睡眠不足可能影響恢復與表現', '睡眠和運動表現無關', '年輕就不用睡太多'], answer: 1, explanation: '睡眠是恢復的重要一環，睡眠不足會影響專注力與運動表現。' },
-      { question: '若想改善身體組成，最適合的做法是？', options: ['只節食不運動', '規律運動並注意飲食習慣', '每天喝含糖飲料', '睡前大量吃消夜'], answer: 1, explanation: '身體組成的改善通常需要運動與飲食一起調整。' },
-      { question: '健康適能學習的重點是什麼？', options: ['只要背定義', '把知識應用到自己的生活選擇', '只求考試及格', '完全不需要實踐'], answer: 1, explanation: '健康適能的重點是把知識轉成生活中的判斷與實踐。' },
-      { question: '有氧運動最主要幫助哪一項能力？', options: ['心肺耐力', '記憶力', '視力', '髮量'], answer: 0, explanation: '有氧運動最直接幫助的是心肺耐力。' },
-      { question: '運動前暖身的主要目的之一是？', options: ['增加受傷風險', '讓身體準備進入活動狀態', '讓人更想睡', '讓肌力立刻翻倍'], answer: 1, explanation: '暖身能讓肌肉與關節進入活動狀態，降低受傷風險。' },
-      { question: '下列哪個習慣對健康較有幫助？', options: ['規律運動', '每天熬夜', '久坐整天', '餐餐含糖飲料'], answer: 0, explanation: '規律運動有助於維持健康適能與整體身體狀態。' },
-      { question: '肌耐力指的是什麼？', options: ['肌肉持續出力的能力', '跑步速度', '身高', '反應時間'], answer: 0, explanation: '肌耐力是肌肉持續出力、維持動作的能力。' },
-      { question: '柔軟度訓練通常包含什麼？', options: ['伸展', '熬夜', '喝含糖飲料', '完全不動'], answer: 0, explanation: '伸展是提升柔軟度的重要方式。' },
-      { question: '健康適能通常不包含下列哪一項？', options: ['心肺耐力', '肌力', '柔軟度', '運氣'], answer: 3, explanation: '健康適能常見面向包括心肺耐力、肌力/肌耐力、柔軟度與身體組成。' },
-      { question: '哪一種方式比較有助於維持運動習慣？', options: ['設定可達成的小目標', '一下子逼自己每天運動三小時', '完全不安排時間', '只靠心情'], answer: 0, explanation: '可達成的小目標比較有助於建立穩定習慣。' },
-      { question: '運動後補充水分的重要原因是？', options: ['幫助身體恢復水分平衡', '讓人更快熬夜', '增加脫水風險', '完全沒有作用'], answer: 0, explanation: '運動後補充水分有助於恢復身體狀態。' },
-      { question: '規律運動可能帶來什麼效果？', options: ['增加體力與健康', '只會更累', '讓身體退步', '完全沒差'], answer: 0, explanation: '規律運動有助於提升體力、心肺功能與整體健康。' },
-      { question: '下列何者較可能是不健康的生活模式？', options: ['規律睡眠', '均衡飲食', '長期熬夜又缺乏活動', '固定伸展'], answer: 2, explanation: '熬夜加上缺乏活動容易影響健康。' },
-      { question: '若想提升健康適能，最重要的是？', options: ['持續且規律地實踐', '只在考前背答案', '想到才做', '完全交給運氣'], answer: 0, explanation: '健康適能最重要的是持續實踐，而不只是知道答案。' },
-      { question: '大學生日常中，哪個改變最容易先開始？', options: ['每天多走路、多活動', '完全不動', '天天熬夜', '不吃任何正餐'], answer: 0, explanation: '從日常增加活動量，是最容易開始的健康行為之一。' }
+      { difficulty: 'easy', label: '簡單', points: 5, question: '想提升心肺耐力，哪一種活動最合適？', options: ['慢跑或快走', '滑手機', '躺著追劇', '只做手指運動'], answer: 0, explanation: '心肺耐力主要靠持續性的有氧運動提升，例如慢跑、快走、游泳與騎腳踏車。' },
+      { difficulty: 'easy', label: '簡單', points: 5, question: '長時間久坐最可能造成什麼影響？', options: ['心肺功能與代謝變差', '體能自然提升', '柔軟度變好', '睡眠一定更穩定'], answer: 0, explanation: '久坐會降低活動量，長期可能影響心肺適能、代謝健康與身體組成。' },
+      { difficulty: 'easy', label: '簡單', points: 5, question: '下列哪一項最接近柔軟度的概念？', options: ['爆發力很強', '關節活動範圍與伸展能力', '記憶力很好', '跑步速度很快'], answer: 1, explanation: '柔軟度是指關節活動範圍與肌肉伸展能力。' },
+      { difficulty: 'easy', label: '簡單', points: 5, question: '下列何者較屬於肌力訓練？', options: ['伏地挺身', '看運動影片', '滑手機', '午睡'], answer: 0, explanation: '伏地挺身屬於肌力與肌耐力訓練。' },
+      { difficulty: 'easy', label: '簡單', points: 5, question: '有氧運動最主要幫助哪一項能力？', options: ['心肺耐力', '記憶力', '視力', '髮量'], answer: 0, explanation: '有氧運動最直接幫助的是心肺耐力。' },
+      { difficulty: 'easy', label: '簡單', points: 5, question: '柔軟度訓練通常包含什麼？', options: ['伸展', '熬夜', '喝含糖飲料', '完全不動'], answer: 0, explanation: '伸展是提升柔軟度的重要方式。' },
+      { difficulty: 'easy', label: '簡單', points: 5, question: '運動後補充水分的重要原因是？', options: ['幫助身體恢復水分平衡', '讓人更快熬夜', '增加脫水風險', '完全沒有作用'], answer: 0, explanation: '運動後補充水分有助於恢復身體狀態。' },
+      { difficulty: 'easy', label: '簡單', points: 5, question: '下列哪個習慣對健康較有幫助？', options: ['規律運動', '每天熬夜', '久坐整天', '餐餐含糖飲料'], answer: 0, explanation: '規律運動有助於維持健康適能與整體身體狀態。' },
+      { difficulty: 'easy', label: '簡單', points: 5, question: '大學生日常中，哪個改變最容易先開始？', options: ['每天多走路、多活動', '完全不動', '天天熬夜', '不吃任何正餐'], answer: 0, explanation: '從日常增加活動量，是最容易開始的健康行為之一。' },
+      { difficulty: 'easy', label: '簡單', points: 5, question: '規律運動可能帶來什麼效果？', options: ['增加體力與健康', '只會更累', '讓身體退步', '完全沒差'], answer: 0, explanation: '規律運動有助於提升體力、心肺功能與整體健康。' },
+      { difficulty: 'normal', label: '普通', points: 10, question: '若想維持良好健康適能，哪個生活型態較理想？', options: ['熬夜配宵夜', '規律運動、均衡飲食、充足睡眠', '平日不動假日爆量運動', '只喝咖啡不吃早餐'], answer: 1, explanation: '健康適能不只靠運動，也與睡眠、飲食與日常習慣密切相關。' },
+      { difficulty: 'normal', label: '普通', points: 10, question: '關於睡眠與健康適能，下列何者正確？', options: ['少睡比較能訓練意志力', '睡眠不足可能影響恢復與表現', '睡眠和運動表現無關', '年輕就不用睡太多'], answer: 1, explanation: '睡眠是恢復的重要一環，睡眠不足會影響專注力與運動表現。' },
+      { difficulty: 'normal', label: '普通', points: 10, question: '若想改善身體組成，最適合的做法是？', options: ['只節食不運動', '規律運動並注意飲食習慣', '每天喝含糖飲料', '睡前大量吃消夜'], answer: 1, explanation: '身體組成的改善通常需要運動與飲食一起調整。' },
+      { difficulty: 'normal', label: '普通', points: 10, question: '肌耐力指的是什麼？', options: ['肌肉持續出力的能力', '跑步速度', '身高', '反應時間'], answer: 0, explanation: '肌耐力是肌肉持續出力、維持動作的能力。' },
+      { difficulty: 'normal', label: '普通', points: 10, question: '健康適能通常不包含下列哪一項？', options: ['心肺耐力', '肌力', '柔軟度', '運氣'], answer: 3, explanation: '健康適能常見面向包括心肺耐力、肌力/肌耐力、柔軟度與身體組成。' },
+      { difficulty: 'hard', label: '困難', points: 15, question: '哪一種方式比較有助於長期維持運動習慣？', options: ['設定可達成的小目標並逐步增加', '一下子逼自己每天運動三小時', '完全不安排時間', '只靠心情'], answer: 0, explanation: '可達成的小目標比較有助於建立穩定習慣，也較容易持續。' },
+      { difficulty: 'hard', label: '困難', points: 15, question: '健康適能學習的重點是什麼？', options: ['只要背定義', '把知識應用到自己的生活選擇', '只求考試及格', '完全不需要實踐'], answer: 1, explanation: '健康適能的重點是把知識轉成生活中的判斷與實踐。' },
+      { difficulty: 'hard', label: '困難', points: 15, question: '下列何者較可能是不健康的生活模式？', options: ['規律睡眠', '均衡飲食', '長期熬夜又缺乏活動', '固定伸展'], answer: 2, explanation: '熬夜加上缺乏活動容易影響健康。' },
+      { difficulty: 'hard', label: '困難', points: 15, question: '若想提升健康適能，最重要的是？', options: ['持續且規律地實踐', '只在考前背答案', '想到才做', '完全交給運氣'], answer: 0, explanation: '健康適能最重要的是持續實踐，而不只是知道答案。' },
+      { difficulty: 'hard', label: '困難', points: 15, question: '如果平常很少運動，開始改善健康適能時最適合的策略是？', options: ['先從低強度活動開始，再逐漸增加', '第一天就挑戰極限', '只靠買運動用品', '完全不需要改變作息'], answer: 0, explanation: '循序漸進較能降低受傷風險，也比較容易養成習慣。' }
     ];
 
-    const TOTAL_QUESTIONS = 20;
-    const QUESTION_INTERVAL_MS = 4000;
+    const TOTAL_QUESTIONS = 10;
+    const QUESTION_INTERVAL_MS = 8000;
     const COIN_INTERVAL_MS = 500;
     const QUESTION_TIME_LIMIT = 8;
-
-    const fallbackRivals = [
+    const FALLBACK_RIVALS = [
       { name: '健康學長', score: 28 },
       { name: '體能女王', score: 24 },
       { name: '熬夜戰士', score: 18 },
       { name: '外食王者', score: 13 }
     ];
 
-    const startScreen = document.getElementById('startScreen');
-    const gameScreen = document.getElementById('gameScreen');
-    const resultScreen = document.getElementById('resultScreen');
-    const characterList = document.getElementById('characterList');
-    const startBtn = document.getElementById('startBtn');
-    const playerInput = document.getElementById('playerInput');
-    const runner = document.getElementById('runner');
-    const playerName = document.getElementById('playerName');
-    const coinCount = document.getElementById('coinCount');
-    const correctCountEl = document.getElementById('correctCount');
-    const remainingCount = document.getElementById('remainingCount');
-    const runArea = document.getElementById('runArea');
-    const questionOverlay = document.getElementById('questionOverlay');
-    const questionText = document.getElementById('questionText');
-    const optionsContainer = document.getElementById('optionsContainer');
-    const feedbackBox = document.getElementById('feedbackBox');
-    const timerBar = document.getElementById('timerBar');
-    const timerText = document.getElementById('timerText');
-    const summaryText = document.getElementById('summaryText');
-    const endingBox = document.getElementById('endingBox');
-    const rankList = document.getElementById('rankList');
-    const liveRankList = document.getElementById('liveRankList');
-    const restartBtn = document.getElementById('restartBtn');
-    const pauseBtn = document.getElementById('pauseBtn');
-    const pauseMask = document.getElementById('pauseMask');
-    const scoreStat = document.getElementById('scoreStat');
+    const $ = id => document.getElementById(id);
+    const startScreen = $('startScreen');
+    const gameScreen = $('gameScreen');
+    const resultScreen = $('resultScreen');
+    const characterList = $('characterList');
+    const startBtn = $('startBtn');
+    const playerInput = $('playerInput');
+    const runner = $('runner');
+    const playerName = $('playerName');
+    const coinCount = $('coinCount');
+    const correctCountEl = $('correctCount');
+    const remainingCount = $('remainingCount');
+    const runArea = $('runArea');
+    const questionOverlay = $('questionOverlay');
+    const questionText = $('questionText');
+    const optionsContainer = $('optionsContainer');
+    const feedbackBox = $('feedbackBox');
+    const timerBar = $('timerBar');
+    const timerText = $('timerText');
+    const summaryText = $('summaryText');
+    const endingBox = $('endingBox');
+    const rankList = $('rankList');
+    const liveRankList = $('liveRankList');
+    const restartBtn = $('restartBtn');
+    const pauseBtn = $('pauseBtn');
+    const endBtn = $('endBtn');
+    const pauseMask = $('pauseMask');
+    const scoreStat = $('scoreStat');
+    const difficultyBadge = $('difficultyBadge');
+    const soundBtn = $('soundBtn');
+    const ownRankNote = $('ownRankNote');
 
     let selectedCharacter = null;
     let playerCustomName = '';
@@ -711,17 +467,79 @@
     let hasTriggeredFirstQuestion = false;
     let sessionId = null;
     let liveRankingCache = [];
+    let isJumping = false;
+    let lastOwnRank = null;
+    let soundEnabled = true;
+    let coinPatternIndex = 0;
+    let coinSpawnCount = 0;
+    let audioCtx = null;
+    let musicTimer = null;
+    let musicStep = 0;
+
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playTone(freq, duration = 0.14, type = 'sine', gainValue = 0.18) {
+      if (!soundEnabled) return;
+      ensureAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(gainValue, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playCorrectSound() {
+      playTone(660, 0.12, 'sine', 0.28);
+      setTimeout(() => playTone(880, 0.16, 'sine', 0.28), 90);
+    }
+
+    function playWrongSound() {
+      playTone(220, 0.18, 'sawtooth', 0.24);
+      setTimeout(() => playTone(160, 0.18, 'sawtooth', 0.22), 110);
+    }
+
+    function startMusic() {
+      if (!soundEnabled) return;
+      ensureAudio();
+      stopMusic();
+      musicStep = 0;
+      const melody = [392, 440, 494, 587, 523, 494, 440, 392, 330, 392, 440, 523];
+      const bass = [196, 196, 220, 220, 262, 262, 220, 220];
+      musicTimer = setInterval(() => {
+        if (!soundEnabled || gameEnded || paused) return;
+        playTone(melody[musicStep % melody.length], 0.20, 'triangle', 0.16);
+        if (musicStep % 4 === 0) {
+          playTone(bass[Math.floor(musicStep / 4) % bass.length], 0.28, 'sine', 0.10);
+        }
+        musicStep++;
+      }, 360);
+    }
+
+    function stopMusic() {
+      if (musicTimer) clearInterval(musicTimer);
+      musicTimer = null;
+    }
+
+    soundBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundBtn.textContent = soundEnabled ? '🔊 音樂：開' : '🔇 音樂：關';
+      if (!soundEnabled) stopMusic();
+      else if (gameScreen.classList.contains('active') && !paused && !gameEnded) startMusic();
+    });
 
     function renderCharacters() {
       characterList.innerHTML = '';
       characters.forEach(char => {
         const card = document.createElement('div');
         card.className = 'character-card';
-        card.innerHTML = `
-          <div class="avatar">${char.avatar}</div>
-          <div style="font-weight:800; font-size:1.05rem;">${char.name}</div>
-          <div style="color:#6b7280; margin-top:6px;">選我開始遊戲</div>
-        `;
+        card.innerHTML = `<div class="avatar">${char.avatar}</div><div style="font-weight:800; font-size:1.05rem;">${char.name}</div><div style="color:#6b7280; margin-top:6px;">選我開始遊戲</div>`;
         card.addEventListener('click', () => {
           document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
           card.classList.add('selected');
@@ -737,22 +555,34 @@
       startBtn.disabled = !(selectedCharacter && name.length > 0);
     }
 
+
+    function pickRandomQuestions(difficulty, count) {
+      return questionBank
+        .filter(q => q.difficulty === difficulty)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, count);
+    }
+
+    function buildQuestionSet() {
+      return [
+        ...pickRandomQuestions('easy', 5),
+        ...pickRandomQuestions('normal', 3),
+        ...pickRandomQuestions('hard', 2)
+      ].sort(() => Math.random() - 0.5);
+    }
+
     function initRealtimeRanking() {
       if (!firebaseReady) {
-        liveRankingCache = [...fallbackRivals];
-        renderRanking([...fallbackRivals, { name: '你', score: score }], liveRankList);
+        liveRankingCache = [...FALLBACK_RIVALS];
+        renderRanking([...FALLBACK_RIVALS, { name: '你', score }], liveRankList);
         return;
       }
-
       const leaderboardRef = ref(db, 'health-decision-challenge/players');
       onValue(leaderboardRef, (snapshot) => {
         const value = snapshot.val() || {};
-        liveRankingCache = Object.values(value)
-          .sort((a, b) => (b.score || 0) - (a.score || 0));
+        liveRankingCache = Object.values(value).sort((a, b) => (b.score || 0) - (a.score || 0));
         renderRanking(liveRankingCache, liveRankList);
-        if (resultScreen.classList.contains('active')) {
-          renderRanking(liveRankingCache, rankList);
-        }
+        if (resultScreen.classList.contains('active')) renderRanking(liveRankingCache, rankList);
       });
     }
 
@@ -789,39 +619,42 @@
 
     function renderRanking(source, targetEl) {
       const list = [...source]
-        .map(item => ({
-          name: item.name || '未命名玩家',
-          score: Number(item.score || 0)
-        }))
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 10);
+        .map(item => ({ name: item.name || '未命名玩家', score: Number(item.score || 0) }))
+        .sort((a, b) => b.score - a.score);
 
+      let newOwnRank = null;
       targetEl.innerHTML = '';
       list.forEach((player, index) => {
+        const isOwn = player.name === playerCustomName;
+        if (isOwn) newOwnRank = index + 1;
         const li = document.createElement('li');
-        const youTag = player.name === playerCustomName ? '（你）' : '';
-        li.innerHTML = `<span>${index + 1}. ${player.name}${youTag}</span><strong>${player.score}</strong>`;
+        if (isOwn) li.classList.add('own-rank');
+        if (isOwn && lastOwnRank !== null && newOwnRank !== lastOwnRank) li.classList.add('rank-bump');
+        li.innerHTML = `<span>${index + 1}. ${player.name}${isOwn ? '（你）' : ''}</span><strong>${player.score}</strong>`;
         targetEl.appendChild(li);
       });
+
+      if (newOwnRank !== null) {
+        ownRankNote.textContent = `你的即時分數：${score}｜目前排名：第 ${newOwnRank} 名／共 ${list.length} 位玩家`;
+        if (lastOwnRank !== null && newOwnRank !== lastOwnRank) ownRankNote.classList.add('rank-bump');
+        setTimeout(() => ownRankNote.classList.remove('rank-bump'), 650);
+        lastOwnRank = newOwnRank;
+      }
     }
 
     async function startGame() {
+      ensureAudio();
       playerCustomName = playerInput.value.trim();
       if (!playerCustomName || !selectedCharacter) return;
 
-      shuffledQuestions = [...questionBank].sort(() => Math.random() - 0.5).slice(0, TOTAL_QUESTIONS);
-      score = 0;
-      correctCount = 0;
-      currentQuestionIndex = 0;
-      collectedCoins = 0;
-      hasTriggeredFirstQuestion = false;
-      gameEnded = false;
-      paused = false;
-      countdown = QUESTION_TIME_LIMIT;
+      // 固定抽出10題：簡單5題、普通3題、困難2題，最後再整體隨機排序
+      shuffledQuestions = buildQuestionSet();
 
-      if (firebaseReady) {
-        await createSession();
-      }
+      score = 0; correctCount = 0; currentQuestionIndex = 0; collectedCoins = 0;
+      hasTriggeredFirstQuestion = false; gameEnded = false; paused = false; countdown = QUESTION_TIME_LIMIT;
+      isJumping = false; lastOwnRank = null;
+
+      if (firebaseReady) await createSession();
 
       startScreen.classList.remove('active');
       resultScreen.classList.remove('active');
@@ -830,6 +663,7 @@
       playerName.textContent = playerCustomName;
       runner.textContent = selectedCharacter.avatar;
       pauseBtn.disabled = false;
+      endBtn.disabled = false;
       pauseBtn.textContent = '⏸ 暫停';
       runArea.classList.remove('paused');
       pauseMask.classList.remove('show');
@@ -840,6 +674,7 @@
       updateStats();
       startCoinSpawner();
       startCollisionWatcher();
+      startMusic();
     }
 
     function startCoinSpawner() {
@@ -855,38 +690,85 @@
       collisionInterval = setInterval(() => {
         if (gameEnded || paused || questionOverlay.classList.contains('show')) return;
         checkCollision();
-      }, 50);
+      }, 35);
+    }
+
+    function getCoinBottom() {
+      const patterns = [
+        [118, 118, 118, 180],
+        [178, 118, 178, 118],
+        [220, 118, 180, 220],
+        [118, 220, 118, 178, 220]
+      ];
+      const pattern = patterns[coinPatternIndex % patterns.length];
+      const bottom = pattern[coinSpawnCount % pattern.length];
+      coinSpawnCount += 1;
+      return bottom;
     }
 
     function spawnCoin() {
       const coin = document.createElement('div');
       coin.className = 'coin';
       coin.textContent = '🪙';
-      coin.style.bottom = '118px';
+      const bottom = getCoinBottom();
+      coin.dataset.bottom = String(bottom);
+      coin.style.bottom = `${bottom}px`;
       runArea.appendChild(coin);
       setTimeout(() => {
-        if (coin.parentNode) coin.remove();
+        if (coin.parentNode && !coin.classList.contains('collected')) coin.remove();
       }, 4500);
     }
 
-    function checkCollision() {
-      const runnerRect = runner.getBoundingClientRect();
-      const coins = runArea.querySelectorAll('.coin');
+    function jump() {
+      if (gameEnded || paused || questionOverlay.classList.contains('show') || isJumping) return;
+      isJumping = true;
+      runner.classList.add('jumping');
+      setTimeout(() => {
+        runner.classList.remove('jumping');
+        isJumping = false;
+      }, 720);
+    }
 
+    runArea.addEventListener('click', (event) => {
+      if (event.target.closest('.question-overlay')) return;
+      jump();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.code === 'Space') {
+        event.preventDefault();
+        jump();
+      }
+    });
+
+    function checkCollision() {
+      const rawRunnerRect = runner.getBoundingClientRect();
+      // 縮小判定範圍，避免空中金幣看起來沒碰到卻被吃掉
+      const runnerRect = {
+        left: rawRunnerRect.left + 16,
+        right: rawRunnerRect.right - 16,
+        top: rawRunnerRect.top + 12,
+        bottom: rawRunnerRect.bottom - 8
+      };
+
+      const coins = runArea.querySelectorAll('.coin');
       coins.forEach(coin => {
         if (coin.classList.contains('collected')) return;
 
+        const coinBottom = Number(coin.dataset.bottom || 118);
+        // 高空金幣一定要在跳躍期間才會進入碰撞判定
+        if (coinBottom >= 170 && !isJumping) return;
+
         const coinRect = coin.getBoundingClientRect();
-        const isColliding = !(
-          runnerRect.right < coinRect.left ||
-          runnerRect.left > coinRect.right ||
-          runnerRect.bottom < coinRect.top ||
-          runnerRect.top > coinRect.bottom
+        const coinCenterX = coinRect.left + coinRect.width / 2;
+        const coinCenterY = coinRect.top + coinRect.height / 2;
+        const isColliding = (
+          coinCenterX >= runnerRect.left &&
+          coinCenterX <= runnerRect.right &&
+          coinCenterY >= runnerRect.top &&
+          coinCenterY <= runnerRect.bottom
         );
 
-        if (isColliding) {
-          collectCoin(coin);
-        }
+        if (isColliding) collectCoin(coin);
       });
     }
 
@@ -896,11 +778,8 @@
       collectedCoins += 1;
       updateStats();
       animateScoreGain('+1', 'success');
-
-      setTimeout(() => {
-        if (coin.parentNode) coin.remove();
-      }, 300);
-
+      playTone(1046, 0.08, 'sine', 0.12);
+      setTimeout(() => { if (coin.parentNode) coin.remove(); }, 300);
       if (!hasTriggeredFirstQuestion && collectedCoins >= 3) {
         hasTriggeredFirstQuestion = true;
         showQuestion();
@@ -911,23 +790,25 @@
       coinCount.textContent = String(score);
       correctCountEl.textContent = String(correctCount);
       remainingCount.textContent = String(Math.max(shuffledQuestions.length - currentQuestionIndex, 0));
-      if (firebaseReady) {
-        await createOrUpdatePlayerRecord(false);
-      } else {
-        renderRanking([...fallbackRivals, { name: playerCustomName || '你', score }], liveRankList);
-      }
+      if (firebaseReady) await createOrUpdatePlayerRecord(false);
+      else renderRanking([...FALLBACK_RIVALS, { name: playerCustomName || '你', score }], liveRankList);
+    }
+
+    function setDifficultyBadge(q) {
+      difficultyBadge.textContent = `${q.label} +${q.points}`;
+      difficultyBadge.className = `difficulty-badge difficulty-${q.difficulty}`;
+      const questionBox = document.querySelector('.question-box');
+      questionBox.classList.remove('question-easy', 'question-normal', 'question-hard');
+      questionBox.classList.add(`question-${q.difficulty}`);
     }
 
     function showQuestion() {
       if (gameEnded || paused) return;
-      if (currentQuestionIndex >= shuffledQuestions.length) {
-        endGame();
-        return;
-      }
-
+      if (currentQuestionIndex >= shuffledQuestions.length) { endGame(); return; }
       const q = shuffledQuestions[currentQuestionIndex];
       questionOverlay.classList.add('show');
       runArea.classList.add('paused');
+      setDifficultyBadge(q);
       questionText.textContent = q.question;
       optionsContainer.innerHTML = '';
       feedbackBox.className = 'feedback';
@@ -970,17 +851,18 @@
       if (selectedIndex === q.answer) {
         selectedBtn.classList.add('correct');
         correctCount += 1;
-        score += 10;
-        feedbackBox.innerHTML = `<strong>答對了！+10 分</strong><br>${q.explanation}`;
-        animateScoreGain('+10', 'success');
+        score += q.points;
+        feedbackBox.innerHTML = `<strong>答對了！+${q.points} 分</strong><br>${q.explanation}`;
+        animateScoreGain(`+${q.points}`, 'success');
+        playCorrectSound();
       } else {
         selectedBtn.classList.add('wrong');
         if (buttons[q.answer]) buttons[q.answer].classList.add('correct');
         score -= 5;
         feedbackBox.innerHTML = `<strong>答錯了！-5 分</strong><br>${q.explanation}`;
         animateScoreGain('-5', 'danger');
+        playWrongSound();
       }
-
       feedbackBox.classList.add('show');
       updateStats();
       setTimeout(closeQuestionAndContinue, 1800);
@@ -995,6 +877,7 @@
       feedbackBox.innerHTML = `<strong>超時！-5 分</strong><br>${q.explanation}`;
       feedbackBox.classList.add('show');
       animateScoreGain('-5', 'danger');
+      playWrongSound();
       updateStats();
       setTimeout(closeQuestionAndContinue, 1800);
     }
@@ -1004,20 +887,17 @@
       runArea.classList.remove('paused');
       pauseBtn.disabled = false;
       currentQuestionIndex += 1;
+      coinPatternIndex += 1;
+      coinSpawnCount = 0;
       updateStats();
       scheduleNextQuestion();
     }
 
     function scheduleNextQuestion() {
       clearTimeout(nextQuestionTimeout);
-      if (currentQuestionIndex >= shuffledQuestions.length) {
-        endGame();
-        return;
-      }
+      if (currentQuestionIndex >= shuffledQuestions.length) { endGame(); return; }
       nextQuestionTimeout = setTimeout(() => {
-        if (!gameEnded && !paused && !questionOverlay.classList.contains('show')) {
-          showQuestion();
-        }
+        if (!gameEnded && !paused && !questionOverlay.classList.contains('show')) showQuestion();
       }, QUESTION_INTERVAL_MS);
     }
 
@@ -1027,25 +907,21 @@
       floating.textContent = text;
       floating.style.color = type === 'danger' ? '#ef4444' : '#fbbf24';
       document.body.appendChild(floating);
-
       const startX = window.innerWidth / 2;
       const startY = window.innerHeight / 2;
       const targetRect = scoreStat.getBoundingClientRect();
       const endX = targetRect.left + targetRect.width / 2;
       const endY = targetRect.top + targetRect.height / 2;
-
       floating.style.left = `${startX}px`;
       floating.style.top = `${startY}px`;
       floating.style.opacity = '1';
       floating.style.transform = 'translate(-50%, -50%) scale(1.2)';
-
       requestAnimationFrame(() => {
         setTimeout(() => {
           floating.style.transform = `translate(${endX - startX}px, ${endY - startY}px) scale(0.4)`;
           floating.style.opacity = '0';
         }, 30);
       });
-
       setTimeout(() => floating.remove(), 1450);
     }
 
@@ -1055,57 +931,53 @@
       runArea.classList.toggle('paused', paused);
       pauseMask.classList.toggle('show', paused);
       pauseBtn.textContent = paused ? '▶ 繼續' : '⏸ 暫停';
-
       if (paused) {
+        stopMusic();
         clearTimeout(nextQuestionTimeout);
-      } else if (hasTriggeredFirstQuestion && currentQuestionIndex < shuffledQuestions.length) {
-        scheduleNextQuestion();
+      } else {
+        startMusic();
+        if (hasTriggeredFirstQuestion && currentQuestionIndex < shuffledQuestions.length) scheduleNextQuestion();
       }
     }
 
-    function removeAllCoins() {
-      runArea.querySelectorAll('.coin').forEach(coin => coin.remove());
-    }
-
+    function removeAllCoins() { runArea.querySelectorAll('.coin').forEach(coin => coin.remove()); }
     function clearGameTimers() {
       clearInterval(coinInterval);
       clearInterval(collisionInterval);
       clearTimeout(nextQuestionTimeout);
       clearInterval(questionTimer);
+      stopMusic();
     }
 
     function getEnding() {
-      if (correctCount <= 5) {
-        return { title: '🛋️ 久坐迷航型', text: '你這次比較像靠直覺闖關，健康適能觀念還有很多進步空間。建議先從每天多活動開始。' };
-      }
-      if (correctCount <= 10) {
-        return { title: '🍔 外食生存型', text: '你已經有部分觀念，但在時間壓力下還不夠穩定。再多練習，你會更強。' };
-      }
-      if (correctCount <= 15) {
-        return { title: '😐 普通維持型', text: '你的健康適能基礎不錯，多數題目都能掌握，再穩定一點就能進入高分組。' };
-      }
+      if (correctCount <= 5) return { title: '🛋️ 久坐迷航型', text: '你這次比較像靠直覺闖關，健康適能觀念還有很多進步空間。建議先從每天多活動開始。' };
+      if (correctCount <= 10) return { title: '🍔 外食生存型', text: '你已經有部分觀念，但在時間壓力下還不夠穩定。再多練習，你會更強。' };
+      if (correctCount <= 15) return { title: '😐 普通維持型', text: '你的健康適能基礎不錯，多數題目都能掌握，再穩定一點就能進入高分組。' };
       return { title: '💪 健康達人型', text: '你在時間壓力下依然能做出不少正確判斷，代表你真的懂健康適能。' };
     }
 
     async function endGame() {
       gameEnded = true;
+      endBtn.disabled = true;
       clearGameTimers();
       removeAllCoins();
-      if (firebaseReady) {
-        await createOrUpdatePlayerRecord(true);
-      }
+      if (firebaseReady) await createOrUpdatePlayerRecord(true);
       gameScreen.classList.remove('active');
       resultScreen.classList.add('active');
-
       const ending = getEnding();
       summaryText.innerHTML = `名稱：<strong>${playerCustomName}</strong><br>角色：<strong>${selectedCharacter.name}</strong><br>總分：<strong>${score}</strong><br>答對題數：<strong>${correctCount} / ${shuffledQuestions.length}</strong>`;
       endingBox.innerHTML = `<strong style="font-size:1.2rem; display:block; margin-bottom:8px;">${ending.title}</strong>${ending.text}`;
+      if (firebaseReady) renderRanking(liveRankingCache, rankList);
+      else renderRanking([...FALLBACK_RIVALS, { name: playerCustomName, score }], rankList);
+    }
 
-      if (firebaseReady) {
-        renderRanking(liveRankingCache, rankList);
-      } else {
-        renderRanking([...fallbackRivals, { name: playerCustomName, score }], rankList);
-      }
+    
+
+    async function finishNow() {
+      if (gameEnded || !gameScreen.classList.contains('active')) return;
+      const ok = confirm('確定要直接結束遊戲嗎？目前分數會被送出排行榜。');
+      if (!ok) return;
+      await endGame();
     }
 
     function restartGame() {
@@ -1114,6 +986,7 @@
       questionOverlay.classList.remove('show');
       pauseMask.classList.remove('show');
       runArea.classList.remove('paused');
+      runner.classList.remove('jumping');
       gameScreen.classList.remove('active');
       resultScreen.classList.remove('active');
       startScreen.classList.add('active');
@@ -1123,18 +996,20 @@
     }
 
     function runSelfTests() {
-      console.assert(Array.isArray(characters) && characters.length === 4, 'characters should contain 4 options');
-      console.assert(questionBank.length >= TOTAL_QUESTIONS, 'question bank should have enough questions');
-      console.assert(QUESTION_INTERVAL_MS === 4000, 'question interval should be 4000ms');
-      console.assert(COIN_INTERVAL_MS === 500, 'coin interval should be 500ms');
-      console.assert(typeof startCoinSpawner === 'function', 'startCoinSpawner should exist');
-      console.assert(typeof checkCollision === 'function', 'checkCollision should exist');
+      console.assert(questionBank.filter(q => q.difficulty === 'easy').length >= 5, '簡單題至少5題');
+      console.assert(questionBank.filter(q => q.difficulty === 'normal').length >= 3, '普通題至少3題');
+      console.assert(questionBank.filter(q => q.difficulty === 'hard').length >= 2, '困難題至少2題');
+      console.assert(TOTAL_QUESTIONS === 10, '題數應為10題');
+      console.assert(QUESTION_INTERVAL_MS === 8000, '題目間隔應為8000ms');
+      console.assert(COIN_INTERVAL_MS === 500, '金幣間隔應為500ms');
+      console.assert(typeof jump === 'function', 'jump function should exist');
     }
 
     playerInput.addEventListener('input', validateStart);
     startBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', restartGame);
     pauseBtn.addEventListener('click', togglePause);
+    endBtn.addEventListener('click', finishNow);
 
     renderCharacters();
     validateStart();
