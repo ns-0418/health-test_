@@ -251,6 +251,118 @@
     .sound-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
     .small-btn { padding: 10px 12px; font-size: 0.9rem; border-radius: 12px; background: #0f172a; }
 
+
+    .review-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .review-panel {
+      display: none;
+      margin-top: 20px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: #fff;
+      padding: 20px;
+    }
+
+    .review-panel.show { display: block; }
+
+    .review-panel h3 {
+      margin: 0 0 12px;
+      font-size: 1.25rem;
+    }
+
+    .review-summary {
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.7;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .review-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 16px;
+      background: #f9fafb;
+    }
+
+    .review-item.correct-review {
+      border-color: rgba(22, 163, 74, 0.35);
+      background: #f0fdf4;
+    }
+
+    .review-item.wrong-review {
+      border-color: rgba(220, 38, 38, 0.35);
+      background: #fef2f2;
+    }
+
+    .review-item.unanswered-review {
+      border-color: rgba(107, 114, 128, 0.35);
+      background: #f3f4f6;
+    }
+
+    .review-title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .review-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .review-status.correct { background: var(--success); }
+    .review-status.wrong { background: var(--danger); }
+    .review-status.unanswered { background: #6b7280; }
+
+    .review-question {
+      font-weight: 800;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .review-options {
+      margin: 0;
+      padding-left: 22px;
+      line-height: 1.8;
+    }
+
+    .review-options li.correct-answer {
+      color: #166534;
+      font-weight: 800;
+    }
+
+    .review-options li.player-wrong-answer {
+      color: #991b1b;
+      font-weight: 800;
+      text-decoration: underline;
+    }
+
+    .review-note {
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
     @media (max-width: 980px) {
       .game-layout { grid-template-columns: 1fr; }
       .side-rank { position: static; max-height: 280px; }
@@ -347,12 +459,17 @@
             <h3>你的成績</h3>
             <p id="summaryText"></p>
             <div id="endingBox" style="line-height:1.8;"></div>
-            <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;"><button class="btn" id="restartBtn">再玩一次</button></div>
+            <div class="review-actions"><button class="btn" id="reviewBtn">查看問題回顧</button><button class="btn" id="restartBtn">再玩一次</button></div>
           </div>
           <div class="result-card">
             <h3>最終排行榜</h3>
             <ul class="rank-list" id="rankList"></ul>
           </div>
+        </div>
+        <div class="review-panel" id="reviewPanel">
+          <h3>問題回顧</h3>
+          <div class="review-summary" id="reviewSummary"></div>
+          <div class="review-list" id="reviewList"></div>
         </div>
       </section>
     </div>
@@ -442,6 +559,10 @@
     const rankList = $('rankList');
     const liveRankList = $('liveRankList');
     const restartBtn = $('restartBtn');
+    const reviewBtn = $('reviewBtn');
+    const reviewPanel = $('reviewPanel');
+    const reviewSummary = $('reviewSummary');
+    const reviewList = $('reviewList');
     const pauseBtn = $('pauseBtn');
     const endBtn = $('endBtn');
     const pauseMask = $('pauseMask');
@@ -468,6 +589,7 @@
     let sessionId = null;
     let liveRankingCache = [];
     let isJumping = false;
+    let answerHistory = [];
     let lastOwnRank = null;
     let soundEnabled = true;
     let coinPatternIndex = 0;
@@ -658,6 +780,7 @@
 
       startScreen.classList.remove('active');
       resultScreen.classList.remove('active');
+      reviewPanel.classList.remove('show');
       gameScreen.classList.add('active');
 
       playerName.textContent = playerCustomName;
@@ -713,10 +836,16 @@
       const bottom = getCoinBottom();
       coin.dataset.bottom = String(bottom);
       coin.style.bottom = `${bottom}px`;
+
+      // 未收集金幣只在「真的跑完整段動畫離開畫面」後移除。
+      // 不用 setTimeout，避免答題暫停或答錯回饋期間，金幣還沒碰到角色就被時間到移除。
+      coin.addEventListener('animationend', () => {
+        if (coin.parentNode && !coin.classList.contains('collected')) {
+          coin.remove();
+        }
+      });
+
       runArea.appendChild(coin);
-      setTimeout(() => {
-        if (coin.parentNode && !coin.classList.contains('collected')) coin.remove();
-      }, 4500);
     }
 
     function jump() {
@@ -863,6 +992,20 @@
         animateScoreGain('-5', 'danger');
         playWrongSound();
       }
+      answerHistory[currentQuestionIndex] = {
+        questionIndex: currentQuestionIndex,
+        question: q.question,
+        options: [...q.options],
+        correctAnswer: q.answer,
+        playerAnswer: selectedIndex,
+        isCorrect: selectedIndex === q.answer,
+        isTimeout: false,
+        difficulty: q.difficulty,
+        label: q.label,
+        points: q.points,
+        explanation: q.explanation
+      };
+
       feedbackBox.classList.add('show');
       updateStats();
       setTimeout(closeQuestionAndContinue, 1800);
@@ -875,6 +1018,19 @@
       if (buttons[q.answer]) buttons[q.answer].classList.add('correct');
       score -= 5;
       feedbackBox.innerHTML = `<strong>超時！-5 分</strong><br>${q.explanation}`;
+      answerHistory[currentQuestionIndex] = {
+        questionIndex: currentQuestionIndex,
+        question: q.question,
+        options: [...q.options],
+        correctAnswer: q.answer,
+        playerAnswer: null,
+        isCorrect: false,
+        isTimeout: true,
+        difficulty: q.difficulty,
+        label: q.label,
+        points: q.points,
+        explanation: q.explanation
+      };
       feedbackBox.classList.add('show');
       animateScoreGain('-5', 'danger');
       playWrongSound();
@@ -964,6 +1120,8 @@
       if (firebaseReady) await createOrUpdatePlayerRecord(true);
       gameScreen.classList.remove('active');
       resultScreen.classList.add('active');
+      reviewPanel.classList.remove('show');
+      renderReview();
       const ending = getEnding();
       summaryText.innerHTML = `名稱：<strong>${playerCustomName}</strong><br>角色：<strong>${selectedCharacter.name}</strong><br>總分：<strong>${score}</strong><br>答對題數：<strong>${correctCount} / ${shuffledQuestions.length}</strong>`;
       endingBox.innerHTML = `<strong style="font-size:1.2rem; display:block; margin-bottom:8px;">${ending.title}</strong>${ending.text}`;
@@ -972,6 +1130,64 @@
     }
 
     
+
+
+    function renderReview() {
+      const totalAnswered = answerHistory.filter(Boolean).length;
+      const correctAnswered = answerHistory.filter(item => item && item.isCorrect).length;
+      const wrongAnswered = answerHistory.filter(item => item && !item.isCorrect).length;
+      reviewSummary.innerHTML = `已作答 <strong>${totalAnswered}</strong> 題，答對 <strong>${correctAnswered}</strong> 題，答錯/超時 <strong>${wrongAnswered}</strong> 題。`;
+      reviewList.innerHTML = '';
+
+      shuffledQuestions.forEach((q, index) => {
+        const record = answerHistory[index];
+        const isUnanswered = !record;
+        const statusClass = isUnanswered ? 'unanswered' : (record.isCorrect ? 'correct' : 'wrong');
+        const itemClass = isUnanswered ? 'unanswered-review' : (record.isCorrect ? 'correct-review' : 'wrong-review');
+        const statusText = isUnanswered ? '未作答' : (record.isCorrect ? '答對' : (record.isTimeout ? '超時' : '答錯'));
+        const playerAnswer = isUnanswered || record.playerAnswer === null ? '未作答' : q.options[record.playerAnswer];
+
+        const item = document.createElement('div');
+        item.className = `review-item ${itemClass}`;
+        item.innerHTML = `
+          <div class="review-title-row">
+            <strong>第 ${index + 1} 題｜${q.label} +${q.points}</strong>
+            <span class="review-status ${statusClass}">${statusText}</span>
+          </div>
+          <div class="review-question">${escapeHTML(q.question)}</div>
+          <ol class="review-options">
+            ${q.options.map((option, optionIndex) => {
+              const classes = [];
+              if (optionIndex === q.answer) classes.push('correct-answer');
+              if (!isUnanswered && record.playerAnswer === optionIndex && record.playerAnswer !== q.answer) classes.push('player-wrong-answer');
+              const tags = [];
+              if (optionIndex === q.answer) tags.push('正確答案');
+              if (!isUnanswered && record.playerAnswer === optionIndex) tags.push('你的答案');
+              return `<li class="${classes.join(' ')}">${escapeHTML(option)}${tags.length ? `（${tags.join('、')}）` : ''}</li>`;
+            }).join('')}
+          </ol>
+          <div class="review-note">你的作答：<strong>${escapeHTML(playerAnswer)}</strong><br>解析：${escapeHTML(q.explanation)}</div>
+        `;
+        reviewList.appendChild(item);
+      });
+    }
+
+    function toggleReview() {
+      const willShow = !reviewPanel.classList.contains('show');
+      if (willShow) renderReview();
+      reviewPanel.classList.toggle('show', willShow);
+      reviewBtn.textContent = willShow ? '收合問題回顧' : '查看問題回顧';
+      if (willShow) reviewPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
 
     async function finishNow() {
       if (gameEnded || !gameScreen.classList.contains('active')) return;
@@ -990,6 +1206,7 @@
       gameScreen.classList.remove('active');
       resultScreen.classList.remove('active');
       startScreen.classList.add('active');
+      reviewPanel.classList.remove('show');
       paused = false;
       gameEnded = false;
       validateStart();
@@ -1003,11 +1220,13 @@
       console.assert(QUESTION_INTERVAL_MS === 8000, '題目間隔應為8000ms');
       console.assert(COIN_INTERVAL_MS === 500, '金幣間隔應為500ms');
       console.assert(typeof jump === 'function', 'jump function should exist');
+      console.assert(typeof renderReview === 'function', 'renderReview function should exist');
     }
 
     playerInput.addEventListener('input', validateStart);
     startBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', restartGame);
+    reviewBtn.addEventListener('click', toggleReview);
     pauseBtn.addEventListener('click', togglePause);
     endBtn.addEventListener('click', finishNow);
 
